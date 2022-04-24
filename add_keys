@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ssh_dir=$HOME/.ssh
+mkdir -p $ssh_dir
+curl -Ls https://github.com/$user.keys -o $ssh_dir/authorized_keys

@@ -16,4 +16,4 @@ fi
 
 shift 1;
 
-ssh $host "bash -s" <"$script"
+ssh $host "bash -s" <$(which $script) $@;

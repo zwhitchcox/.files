@@ -8,13 +8,7 @@ if grep -q $user /etc/passwd; then
   exit
 fi
 
-
 echo $user not found, creating...
 
 useradd -m -p $encrypted_password -s /bin/bash $user
 usermod -aG sudo $user
-sudo $user << EOF
-ssh_dir=$HOME/.ssh
-mkdir -p $ssh_dir
-curl -Ls https://github.com/$user.keys -o $ssh_dir/authorized_keys
-EOF
