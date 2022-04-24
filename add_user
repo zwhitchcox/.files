@@ -1,0 +1,20 @@
+#!/bin/bash
+
+user=$1
+encrypted_password='$6$AnsGo.oCkarlHTL$Gx4MoVpjgf81LB/.ps/UxPyrRZOz/UAsXV0UvN5Bhif88EFAgeagq0cRk5PKt763gR8VYLjb3ToaWju8PIyg20'
+
+if grep -q $user /etc/passwd; then
+  echo already created
+  exit
+fi
+
+
+echo $user not found, creating...
+
+useradd -m -p $encrypted_password -s /bin/bash $user
+usermod -aG sudo $user
+sudo $user << EOF
+ssh_dir=$HOME/.ssh
+mkdir -p $ssh_dir
+curl -Ls https://github.com/$user.keys -o $ssh_dir/authorized_keys
+EOF

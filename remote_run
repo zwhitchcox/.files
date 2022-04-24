@@ -1,0 +1,19 @@
+#!/bin/bash
+
+host=$1
+if [ -z "$host" ]; then
+  echo host is required >> /dev/stderr
+  exit 1
+fi
+
+shift 1;
+
+script=$1
+if [ -z "$script" ]; then
+  echo script is required >> /dev/stderr
+  exit 1
+fi
+
+shift 1;
+
+ssh $host "bash -s" <"$script"
