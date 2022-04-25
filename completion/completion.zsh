@@ -1,6 +1,6 @@
 #/usr/bin/env zsh
 
-_completion_hosts() {
+_completion_remote_run() {
   hosts=($(sed -e 's/#.*//' -e 's/[[:blank:]]*$//' -e '/^$/d' /etc/hosts | awk '{print $2}' | egrep -v '(local|broadcast)host|kubernetes'))
   for host in ${hosts[@]}; do
     compadd $host remote_run
@@ -13,4 +13,4 @@ _completion_hosts() {
   done
 }
 
-compdef _completion_hosts remote_run
+compdef _completion_remote_run remote_run

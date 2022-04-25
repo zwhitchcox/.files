@@ -12,3 +12,10 @@ echo $user not found, creating...
 
 useradd -m -p $encrypted_password -s /bin/bash $user
 usermod -aG sudo $user
+
+sshdir="$(su $user -c 'echo $HOME')/.ssh"
+
+su $user << EOF
+mkdir -p $sshdir
+curl -Ls https://github.com/$user.keys -o $sshdir/authorized_keys
+EOF

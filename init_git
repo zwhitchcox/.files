@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# HARDCODED
+git config --replace-all --global user.name "Zane Hitchcox"
+git config --replace-all --global user.email zane@balena.io
