@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then echo Must provide image, e.g. ext4.img > /dev/stderr; exit 1; fi
+
+losetup -f $1
+IFS=':' dev=$(losetup -a| grep $1 | awk '{ print $1 }')
+if [ -z $dev ]; then echo Could not set up loopback device > /dev/stderr; exit 1; fi
+mount -o loop $dev /tmp/mounted
