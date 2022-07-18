@@ -1,0 +1,3 @@
+#!/bin/bash
+
+find $1 -type f -name '*' | xargs wc -l |  awk '{s+=$1} END {print s}'
