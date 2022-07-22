@@ -1,5 +1,3 @@
-brew install doctl
-brew install gh
 brew install nvm
 
 cat >> $HOME/.zshrc << EOF

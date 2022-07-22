@@ -1,0 +1,14 @@
+#!/bin/bash
+
+VERSION=$(gh release list -R https://github.com/mikefarah/yq | grep Latest | awk '{ print $1 }')
+ARCH=$(uname -m)
+if [ $ARCH == x86_64 ]; then
+  ARCH=amd64
+fi
+PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
+BINARY=yq_${PLATFORM}_${ARCH}
+
+curl -L https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz |\
+  tar xz
+chmod +x ${BINARY}
+sudo mv ${BINARY} /usr/local/bin/yq
