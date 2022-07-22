@@ -1,0 +1,9 @@
+#!/bin/bash
+
+REPO=${1}
+if [ -z $REPO ]; then
+  echo repo argument is required > /dev/stderr
+  exit 1
+fi
+
+gh release list -R https://github.com/$REPO | grep Latest | awk '{ print $1 }'

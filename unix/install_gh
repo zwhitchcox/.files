@@ -1,0 +1,13 @@
+#!/bin/bash
+
+REPO=cli/cli
+
+RELEASE=$(latest_release ${REPO})
+ARCH=$(get_arch)
+PLATFORM=$(get_platform)
+BINARY=gh_${RELEASE}_${PLATFORM}_${ARCH}
+
+curl -L https://github.com/${REPO}/releases/download/${RELEASE}/${BINARY}.tar.gz | tar xzf
+chmod +x ./${BINARY}/bin/gh
+sudo mv ./${BINARY}/bin/gh /usr/local/bin/gh
+sudo rm ./${BINARY}

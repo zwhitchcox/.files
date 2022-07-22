@@ -1,0 +1,8 @@
+#!/bin/bash
+
+USER_NAME=${1:-"Zane Hitchcox"}
+USER_EMAIL=${2:-"zane@balena.io"}
+# HARDCODED
+echo "setting user.name to ${USER_NAME}"
+git config --replace-all --global user.name ${USER_NAME}
+git config --replace-all --global user.email ${USER_EMAIL}
