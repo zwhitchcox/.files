@@ -1,9 +1,10 @@
 #!/bin/bash
 
-set -eux
-
-if [ -z "$1" ]; then echo Must provide image, e.g. ext4.img > /dev/stderr; exit 1; fi
-
-umount /tmp/mounted
-IFS=':' dev=$(losetup -a | grep $1 | awk '{ print $1 }')
+mountpoint=${1:-/tmp/lomount}
+dev=$(mount | grep $mountpoint | awk '{ print $1 }')
+if [ -z "$dev" ]; then
+  echo Nothing to do for $mountpoint > /dev/stderr
+  exit 1
+fi
+umount $mountpoint
 losetup -d $dev

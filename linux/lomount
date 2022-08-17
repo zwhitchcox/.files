@@ -1,8 +1,56 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then echo Must provide image, e.g. ext4.img > /dev/stderr; exit 1; fi
 
-losetup -f $1
-IFS=':' dev=$(losetup -a| grep $1 | awk '{ print $1 }')
-if [ -z $dev ]; then echo Could not set up loopback device > /dev/stderr; exit 1; fi
-mount -o loop $dev /tmp/mounted
+detach=false
+while getopts "d" flag; do
+case "$flag" in
+    d) detach=true;;
+    *) exit 42;;
+esac
+done
+
+shift $((OPTIND - 1))
+
+file=${1}
+if [ -z $file ]; then
+  echo Must provide image, e.g. ext4.img > /dev/stderr
+  exit 1
+fi
+if [ ! -f $file ]; then
+  echo $file is not a file > /dev/stderr
+  exit 1
+fi
+
+partition=${@:$OPTIND+1:1}
+partition=${partition:-0}
+mountpoint=${@:$OPTIND+2:1}
+mountpoint=${mountpoint:-/tmp/lomount}
+
+offset=$(partx -n $partition -r $file | tail -n 1 | awk '{ print $2 }')
+offset=$(($offset * 512))
+
+if [ $detach == true ]; then
+  loumount $mountpoint 2>&1 > /dev/null
+fi
+dev=$(losetup -a | grep $file | IFS=: awk '{print $1}' | sed 's/://g')
+if [ -n "$dev" ]; then
+  if [ $detach == true ]; then
+    loumount $mountpoint
+    losetup -d $dev
+  else
+    echo loopback device exists at "'"$dev"'" > /dev/stderr
+    echo run with '-d' to automatically detach > /dev/stderr
+    exit 1
+  fi
+fi
+
+losetup -f $file -o $offset
+IFS=: dev=$(losetup -a | grep $file | awk '{ print $1 }')
+if [ -z "$dev" ]; then
+  echo Could not set up loopback device > /dev/stderr;
+  exit 1;
+fi
+
+mkdir -p $mountpoint
+mount -o loop $dev $mountpoint
+if [ $? == 0 ]; then echo mounted at $mountpoint ; fi
