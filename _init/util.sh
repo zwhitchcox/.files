@@ -107,3 +107,11 @@ install_nvim() {
   git clone git@github.com:$GH_USERNAME/config.neovim
   sudo pacman -S neovim
 }
+
+copy_orgs() {
+  if test -f $PROJPATH/organizations; then
+    for org in `cat $PROJPATH/organizations`; do
+      mkdir -p $HOME/dev/$org
+    for
+  fi
+}

@@ -38,3 +38,4 @@ test -n $REINIT && copy_envs
 whichq rustup || install_rustup
 test -d $HOME/.nvm || install_nvm
 whichq nvim || install_nvim
+test ! -d $HOME/dev || copy_orgs

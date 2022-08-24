@@ -40,8 +40,8 @@ if [[ $PWD/ == $HOME/dev/* ]]; then
 else
   echo -n 'It looks like you are outside a project. Continue (Y/n)? ' > /dev/stderr
   read answer
-  echo $answer
-  if [[ "$answer" != *y* ]] || [[ "$answer" != *Y* ]]; then
+  if [[ "$answer" != *y* ]] && [[ "$answer" != *Y* ]]; then
+    echo exiting
     exit 1
   fi
 fi
