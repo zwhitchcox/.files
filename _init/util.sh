@@ -88,3 +88,8 @@ whichq() {
 rcfile() {
   echo -e ".$(basename $(echo -e $SHELL))rc"
 }
+
+err_exit() {
+  echo $@ > /dev/stderr
+  exit 1
+}

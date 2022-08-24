@@ -1,0 +1,1 @@
+add_bin_to_path $HOME/bin/{unix,linux,git}

@@ -1,4 +1,0 @@
-rcfile() {
-  echo -e ".$(basename $(echo -e $SHELL))rc"
-}
-

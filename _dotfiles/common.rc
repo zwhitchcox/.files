@@ -1,20 +1,36 @@
+rcfile() {
+  echo -e ".$(basename $(echo -e $SHELL))rc"
+}
+refresh_rc() {
+  source $HOME/$(rcfile)
+}
 add_bin_to_path() {
   for p in "$@"; do
     test -d $p && echo $PATH | grep -q "$p" || export PATH=$PATH:$p
   done
 }
+
 source_env() {
   for p in ${1[@]}; do
     test -f $p && source $p
   done
 }
 
-add_bin_to_path $HOME/bin/{unix,linux,git}
-
+switch_env() {
+  local new_env=${1:-base}
+  echo ENV:$new_env
+  if [ -z $new_env ]; then
+    echo must provide new environment > /dev/stderr
+    return 1
+  fi
+  source $HOME/env/base_env
+  source $HOME/env/${new_env}_env
+  echo $new_env > $HOME/.config/cur_env
+}
 
 source_env \
   $HOME/.cargo/env \
   /usr/share/nvm/init-nvm.sh
 
 export EDITOR=nvim
-
+switch_env $(cat $HOME/.config/cur_env 2>/dev/null)
