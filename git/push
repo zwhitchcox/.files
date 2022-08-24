@@ -41,7 +41,6 @@ else
   echo -n 'It looks like you are outside a project. Continue (Y/n)? ' > /dev/stderr
   read answer
   if [[ "$answer" != *y* ]] && [[ "$answer" != *Y* ]]; then
-    echo exiting
     exit 1
   fi
 fi
@@ -49,3 +48,4 @@ fi
 git add . -A
 git commit -m "$msg"
 git push
+
