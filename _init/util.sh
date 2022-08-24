@@ -82,7 +82,7 @@ copy_envs() {
 }
 
 whichq() {
-  which $@ > /dev/null
+  which $@ &>/dev/null
 }
 
 rcfile() {
@@ -112,6 +112,14 @@ copy_orgs() {
   if test -f $PROJPATH/organizations; then
     for org in `cat $PROJPATH/organizations`; do
       mkdir -p $HOME/dev/$org
-    for
+    done
   fi
+}
+
+install_doctl() {
+  sudo snap install doctl
+}
+
+doctl_login() {
+  doctl auth init &>/dev/null
 }

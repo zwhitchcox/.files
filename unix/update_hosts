@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOSTS_FILE="/etc/hosts"
-ADDED_TEXT_SUFFIX=_admin_test
+ADDED_TEXT_SUFFIX=_admin
 ADDED_START_TEXT="# Start of section $USER$ADDED_TEXT_SUFFIX"
 ADDED_END_TEXT="# End of section $USER$ADDED_TEXT_SUFFIX"
 
