@@ -28,6 +28,7 @@ switch_env() {
   echo $new_env > $HOME/.config/cur_env
   git config --global --replace-all user.email $GIT_EMAIL
   git config --global --replace-all user.name $GIT_NAME
+  export CUR_ENV=$new_env
 }
 
 source_env \

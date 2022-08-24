@@ -6,6 +6,17 @@ if [ -z "$msg" ]; then
   exit 1
 fi
 
+if [[ $PWD/ == $HOME/dev/* ]]; then
+  if [[ $PWD/ != $HOME/dev/$CUR_ENV/* ]]; then
+    echo $CUR_ENV
+    echo -n 'It looks like you are in the wrong environment for your project. Continue (Y/n)? '
+    read -r answer
+    if [[ "$answer" != "y" ]] && [[ "$answer" != 'Y' ]]; then
+      exit 1
+    fi
+  fi
+fi
+
 git add . -A
 git commit -m "$msg"
 git push
