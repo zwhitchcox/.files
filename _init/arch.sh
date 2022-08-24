@@ -1,6 +1,13 @@
 sudo echo -n '' # acquire sudo permissions early
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-source $SCRIPTPATH/../../env
+PROJPATH=$SCRIPTPATH/../..
+ENVPATH=$PROJPATH/env
+
+# get environment variables
+source $ENVPATH/base_env
+source $ENVPATH/init_env
+
+# get common scripts
 source $SCRIPTPATH/common.sh
 
 arch_base() {
@@ -24,3 +31,4 @@ gh_config
 gh_add_host_keys
 test -d $HOME/bin || init_bin
 init_dotfiles
+cp -r $ENVPATH
