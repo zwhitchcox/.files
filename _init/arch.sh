@@ -1,4 +1,3 @@
- set -x
 sudo echo -n '' # acquire sudo permissions early
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJPATH=$SCRIPTPATH/../..

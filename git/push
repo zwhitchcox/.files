@@ -18,20 +18,31 @@ org_dir=$(rel_path $HOME/dev $PWD | sed 's/\/.*//')
 CUR_ENV=$(cat $ENV_FILE)
 
 
+if ! test -d .git ; then
+  echo "You are not in a git repository" > /dev/stderr
+  exit 1
+fi
 if [[ $PWD/ == $HOME/dev/* ]]; then
   if [[ $PWD/ != $HOME/dev/$CUR_ENV/* ]]; then
-    echo 'It looks like you are in the wrong environment for your project.'
-    echo
-    echo "Current environment: $CUR_ENV"
-    echo "Suggested environment: $org_dir"
+    echo 'It looks like you are in the wrong environment for your project.' > /dev/stderr
+    echo > /dev/stderr
+    echo "Current environment: $CUR_ENV" > /dev/stderr
+    echo "Suggested environment: $org_dir" > /dev/stderr
 
-    echo -n 'Switch to `'$org_dir'` (Y/n)? '
+    echo -n 'Switch to `'$org_dir'` (Y/n)? ' > /dev/stderr
     read answer
     echo $answer
     if [[ "$answer" == *y* ]] || [[ "$answer" == *Y* ]]; then
       source $HOME/.zshrc
       set_env $org_dir
     fi
+  fi
+else
+  echo -n 'It looks like you are outside a project. Continue (Y/n)? ' > /dev/stderr
+  read answer
+  echo $answer
+  if [[ "$answer" != *y* ]] || [[ "$answer" != *Y* ]]; then
+    exit 1
   fi
 fi
 
