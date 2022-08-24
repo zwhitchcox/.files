@@ -72,13 +72,13 @@ init_bin() {
   popd
 }
 
-init_dotfiles() {
-  src_rc="source $BINDIR/_dotfiles/arch.rc"
+add_rc() {
+  local src_rc="source $BINDIR/_dotfiles/${1}.rc"
   grep -q "$src_rc" $HOME/$(rcfile) || echo $src_rc >> $HOME/$(rcfile)
 }
 
 copy_envs() {
-  ls ./env/* | grep -v init | cpio -pvd $HOME
+  ls ./env/* | grep -v init | cpio -pvd $HOME &>/dev/null
 }
 
 whichq() {
@@ -88,4 +88,3 @@ whichq() {
 rcfile() {
   echo -e ".$(basename $(echo -e $SHELL))rc"
 }
-

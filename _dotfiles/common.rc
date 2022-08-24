@@ -1,0 +1,20 @@
+local add_bin_to_path() {
+  for p in ${1[@]}; do
+    test -d $p && echo $PATH | grep -q "$p" || export PATH=$PATH:$p
+  done
+}
+local source_env() {
+  for p in ${1[@]}; do
+    test -f $p && source $p
+  done
+}
+
+add_bin_to_path $HOME/bin/{unix,linux,git}
+
+
+source_env \
+  $HOME/.cargo/env \
+  /usr/share/nvm/init-nvm.sh
+
+export EDITOR=nvim
+

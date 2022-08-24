@@ -7,8 +7,8 @@ ENVPATH=$PROJPATH/env
 source $ENVPATH/base_env
 source $ENVPATH/init_env
 
-# get common scripts
-source $SCRIPTPATH/common.sh
+# get utils functions
+source $SCRIPTPATH/util.sh
 
 arch_base() {
   pacman -Syyu --noconfirm --needed \
@@ -30,5 +30,6 @@ test -f ~/.ssh/id_rsa || keygen
 gh_config
 gh_add_host_keys
 test -d $HOME/bin || init_bin
-init_dotfiles
-cp -r $ENVPATH
+add_rc common
+add_rc arch
+copy_envs
