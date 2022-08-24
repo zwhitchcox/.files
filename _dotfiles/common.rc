@@ -1,9 +1,9 @@
-local add_bin_to_path() {
-  for p in ${1[@]}; do
+add_bin_to_path() {
+  for p in "$@"; do
     test -d $p && echo $PATH | grep -q "$p" || export PATH=$PATH:$p
   done
 }
-local source_env() {
+source_env() {
   for p in ${1[@]}; do
     test -f $p && source $p
   done
