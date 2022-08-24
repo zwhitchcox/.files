@@ -1,0 +1,1 @@
+REINIT=true bash $HOME/bin/init.sh

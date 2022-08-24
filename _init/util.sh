@@ -93,3 +93,17 @@ err_exit() {
   echo $@ > /dev/stderr
   exit 1
 }
+
+install_rustup() {
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+}
+
+install_nvm() {
+  local release=$(gh release list -R nvm-sh/nvm --limit 1 | awk '{print $1}')
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${release}/install.sh | bash
+}
+
+install_nvim() {
+  git clone git@github.com:$GH_USERNAME/config.neovim
+  sudo pacman -S neovim
+}

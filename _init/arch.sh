@@ -3,9 +3,11 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJPATH=$SCRIPTPATH/../..
 ENVPATH=$PROJPATH/env
 
-# get environment variables
-source $ENVPATH/base_env
-source $ENVPATH/init_env
+if [ -z $REINIT ]; then
+  # get environment variables
+  source $ENVPATH/base_env
+  source $ENVPATH/init_env
+fi
 
 # get utils functions
 source $SCRIPTPATH/util.sh
@@ -32,4 +34,7 @@ gh_add_host_keys
 test -d $HOME/bin || init_bin
 add_rc common
 add_rc arch
-copy_envs
+test -n $REINIT || copy_envs
+whichq rustup || install_rustup
+test -d $HOME/.nvm || install_nvm
+whichq nvim || install_nvim
