@@ -1,0 +1,2 @@
+cur_env=$(cat $ENV_FILE)
+cat $HOME/env/base_env $HOME/env/${cur_env}_env

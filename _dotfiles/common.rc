@@ -17,18 +17,8 @@ source_env() {
 }
 
 switch_env() {
-  local new_env=${1:-base}
-  echo ENV:$new_env
-  if [ -z $new_env ]; then
-    echo must provide new environment > /dev/stderr
-    return 1
-  fi
-  source $HOME/env/base_env
-  source $HOME/env/${new_env}_env
-  echo $new_env > $HOME/.config/cur_env
-  git config --global --replace-all user.email $GIT_EMAIL
-  git config --global --replace-all user.name $GIT_NAME
-  export CUR_ENV=$new_env
+  set_env $1
+  eval `get_env`
 }
 
 source_env \
@@ -36,4 +26,5 @@ source_env \
   /usr/share/nvm/init-nvm.sh
 
 export EDITOR=nvim
-switch_env $(cat $HOME/.config/cur_env 2>/dev/null)
+export ENV_FILE=$HOME/.config/CUR_ENV
+eval `get_env`

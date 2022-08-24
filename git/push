@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 msg=$1
 
 if [ -z "$msg" ]; then
@@ -6,13 +6,31 @@ if [ -z "$msg" ]; then
   exit 1
 fi
 
+rel_path() {
+    local common path up
+    common=${1%/} path=${2%/}/
+    while test "${path#"$common"/}" = "$path"; do
+        common=${common%/*} up=../$up
+    done
+    path=$up${path#"$common"/}; path=${path%/}; printf %s "${path:-.}"
+}
+org_dir=$(rel_path $HOME/dev $PWD | sed 's/\/.*//')
+CUR_ENV=$(cat $ENV_FILE)
+
+
 if [[ $PWD/ == $HOME/dev/* ]]; then
   if [[ $PWD/ != $HOME/dev/$CUR_ENV/* ]]; then
-    echo $CUR_ENV
-    echo -n 'It looks like you are in the wrong environment for your project. Continue (Y/n)? '
-    read -r answer
-    if [[ "$answer" != "y" ]] && [[ "$answer" != 'Y' ]]; then
-      exit 1
+    echo 'It looks like you are in the wrong environment for your project.'
+    echo
+    echo "Current environment: $CUR_ENV"
+    echo "Suggested environment: $org_dir"
+
+    echo -n 'Switch to `'$org_dir'` (Y/n)? '
+    read answer
+    echo $answer
+    if [[ "$answer" == *y* ]] || [[ "$answer" == *Y* ]]; then
+      source $HOME/.zshrc
+      set_env $org_dir
     fi
   fi
 fi
