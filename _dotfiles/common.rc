@@ -28,17 +28,25 @@ source_env \
 dev() {
   local cur_env=$(cat $ENV_FILE)
   local project=$1
-  cd $DEV_DIR/$cur_env/$project
-  if [ -z $project ]; then
+  local p=$DEV_DIR/$cur_env/$project
+  local pretty_path=${p:$((${#DEV_DIR}+1))}
+  if [ ! -d $p ]; then
+    echo $pretty_path does not exist > /dev/stderr
+    return 1
+  fi
+  cd $p
+  if [ -z $project ] ; then
     ls
     return
   fi
+  echo $pretty_path >> $DEV_HIST
   vim .
 }
 
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
 export DEV_DIR=$HOME/dev
+export DEV_HIST=$HOME/.devhist
 
 HISTSIZE=1000
 HISTFILESIZE=2000

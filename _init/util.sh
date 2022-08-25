@@ -117,6 +117,13 @@ install_doctl() {
   sudo snap install doctl
 }
 
+install_balena() {
+  local release=$(bash $BINDIR/git/latest_release balena-io/balena-cli)
+  curl -L -o /tmp/balena-cli.tar.gz https://github.com/cli/cli/releases/download/v$release/gh_${release:1}_linux_amd64.tar.gz  
+  mkdir -p $HOME/usr
+  tar -xzvf $HOME/usr
+}
+
 doctl_login() {
   doctl auth init &>/dev/null
 }

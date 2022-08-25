@@ -50,4 +50,4 @@ whichq nvim || install_nvim
 test ! -d $HOME/dev || copy_orgs
 whichq doctl || install_doctl
 ! doctl account get &>/dev/null || doctl_login
-
+which1 balena || install_balena
