@@ -28,13 +28,18 @@ source_env \
 dev() {
   local cur_env=$(cat $ENV_FILE)
   local project=$1
-  cd dev/$cur_env/$project
+  cd $DEV_DIR/$cur_env/$project
+  if [ -z $project ]; then
+    ls
+    return
+  fi
+  vim .
 }
 
 
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
-eval `get_env`
+export DEV_DIR=$HOME/dev
 
 
 # text
