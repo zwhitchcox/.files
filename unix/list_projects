@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+ENV=$(cat $ENV_FILE)
+projects=$(find -L $DEV_DIR/$ENV  -type d -name '.git')
+for project in $projects; do
+ echo $(dirname ${project:$((${#DEV_DIR}+1))}) 
+done
