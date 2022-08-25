@@ -104,10 +104,6 @@ install_nvm() {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${release}/install.sh | bash
 }
 
-install_nvim() {
-  git clone git@github.com:$GH_USERNAME/config.neovim
-  sudo pacman -S neovim --noconfirm
-}
 
 copy_orgs() {
   if test -f $PROJPATH/organizations; then

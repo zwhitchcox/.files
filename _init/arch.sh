@@ -21,6 +21,11 @@ arch_base() {
     jq
 }
 
+install_nvim() {
+  git clone git@github.com:$GH_USERNAME/config.neovim
+  sudo pacman -S neovim --noconfirm
+}
+
 
 SRCDIR=$HOME/src
 BINDIR=$HOME/bin
@@ -46,19 +51,3 @@ test ! -d $HOME/dev || copy_orgs
 whichq doctl || install_doctl
 ! doctl account get &>/dev/null || doctl_login
 
-install_virtualbox() {
-  set -e
-  local kernel=$(mhwd-kernel -li | sed -re  's/.*(linux[0-9]+).*/\1/' | head -n 1)
-  sudo pacman -Syu virtualbox $kernel-virtualbox-host-modules --noconfirm
-  sudo vboxreload
-  sudo gpasswd -a $USER vboxusers
-  #pamac build virtualbox-ext-oracle-manjaro
-  sudo modprobe vboxguest vboxvideo vboxsf
-  sudo systemctl enable --now vboxservice.service
-  sudo usermod -aG vboxsf ${USER}
-  sudo mkdir /media
-  sudo chmod 755 /media
-  set +e
-}
-
-install_virtualbox &>/dev/null
