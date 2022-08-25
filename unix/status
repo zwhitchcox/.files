@@ -26,11 +26,11 @@ status_all() {
   cat $DEV_HIST  | awk '!x[$0]++' | tail -n 3 | sed 's/^/  /'
 }
 
-
 status_one() {
-  set -x
   local project=$1
-  cd $DEV_DIR/$ENV/$project
+  if [ $project != "." ]; then
+    cd $DEV_DIR/$ENV/$project
+  fi
   for f in $(git ls-files --others --exclude-standard -z); do
     git add -N $f
   done
