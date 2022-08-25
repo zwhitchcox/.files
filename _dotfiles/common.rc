@@ -36,11 +36,12 @@ dev() {
   vim .
 }
 
-
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
 export DEV_DIR=$HOME/dev
 
+HISTSIZE=1000
+HISTFILESIZE=2000
 
 # text
 alias lower="tr '[:upper:]' '[:lower:]'"
