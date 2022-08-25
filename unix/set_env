@@ -6,5 +6,5 @@ fi
 echo setting environment to $new_env
 echo $new_env > $ENV_FILE
 eval `get_env`
-git config --global --replace-all user.email $GIT_EMAIL
-git config --global --replace-all user.name $GIT_NAME
+git config --global --replace-all user.email "$GIT_EMAIL"
+git config --global --replace-all user.name "$GIT_NAME"
