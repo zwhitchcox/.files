@@ -19,9 +19,9 @@ output_all() {
 filter_deleted() {
   local in;
   while read in; do
-    test -d $DEV_DIR/$in/.git && echo $in
+    test -d "$DEV_DIR/$in/.git" && echo "$in"
   done
 }
 
 ENV=$(cat $ENV_FILE)
-cat <(cat $DEV_HIST) <(output_all)  | awk '!x[$0]++' | sed 's/^/  /' | filter_deleted
+cat <(tac $DEV_HIST) <(output_all) | awk '!x[$0]++' | sed 's/^/  /' | head -n 10 | filter_deleted

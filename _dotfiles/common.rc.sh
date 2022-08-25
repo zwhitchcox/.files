@@ -28,21 +28,39 @@ source_env \
   $HOME/.cargo/env \
   /usr/share/nvm/init-nvm.sh
 
+starts_with() {
+  [[ $1 == $2* ]] && return 0
+  return 1
+}
+
 dev() {
+  if [ -z "$1" ]; then
+    echo "Select a project"
+    dev $(get_selection ""$(list_projects))
+    return 0
+  fi
+
   local cur_env=$(cat $ENV_FILE)
-  local project=$1
-  local p=$DEV_DIR/$cur_env/$project
-  local pretty_path=${p:$((${#DEV_DIR}+1))}
-  if [ ! -d $p ]; then
-    echo $pretty_path does not exist > /dev/stderr
+  local paths=("${DEV_DIR}" "${DEV_DIR}/${cur_env}"  ".")
+  local project=""
+  for p in ${paths[@]} ; do
+    if [ -d "${p}/${1}/.git" ]; then
+      project="$p/$1"
+      break
+    fi
+  done
+
+  if [ -z "$project" ]; then
+    echo "Couldn't find project $1" 1>&2
     return 1
   fi
-  cd $p
-  if [ -z $project ] ; then
-    ls
-    return
+
+  if starts_with "$project" "$DEV_DIR"; then
+    echo ${project:$((${#DEV_DIR}+1))} >> $DEV_HIST
   fi
-  echo $pretty_path >> $DEV_HIST
+
+  cd "$project"
+
   if [ -z $VIMRUNTIME ]; then
     vim .
   fi

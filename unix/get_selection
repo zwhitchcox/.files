@@ -11,7 +11,7 @@ function select_option {
     local buf=""
 
     # little helpers for terminal print control and key input
-    ESC=$( printf "\033")
+    ESC=$( printf "\033" )
     cursor_blink_on()  { printf "$ESC[?25h"; }
     cursor_blink_off() { printf "$ESC[?25l"; }
     cursor_to()        { printf "$ESC[$1;${2:-1}H"; }
@@ -80,5 +80,5 @@ function select_option {
     return $selected
 }
 
-select_option ${@}
+select_option ${@} 1>/dev/tty 2>/dev/tty
 echo ${@:$(($?+1)):1}
