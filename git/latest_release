@@ -6,4 +6,4 @@ if [ -z $REPO ]; then
   exit 1
 fi
 
-gh release list -R https://github.com/$REPO | grep Latest | awk '{ print $1 }'
+gh release list -R https://github.com/$REPO | grep -i latest | awk '{ print $1 }'

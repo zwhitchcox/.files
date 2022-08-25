@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+cd $HOME/dev
+
+set -e
+git add . -A
+git commit -m "sync projects"
+git push
