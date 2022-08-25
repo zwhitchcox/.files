@@ -25,6 +25,13 @@ source_env \
   $HOME/.cargo/env \
   /usr/share/nvm/init-nvm.sh
 
+dev() {
+  local cur_env=$(cat $ENV_FILE)
+  local project=$1
+  cd dev/$cur_env/$project
+}
+
+
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
 eval `get_env`
