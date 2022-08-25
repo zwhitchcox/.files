@@ -19,6 +19,7 @@ source_env() {
 switch_env() {
   set_env $1
   eval `get_env`
+  status
 }
 
 source_env \
@@ -40,7 +41,9 @@ dev() {
     return
   fi
   echo $pretty_path >> $DEV_HIST
-  vim .
+  if [ -z $VIMRUNTIME ]; then
+    vim .
+  fi
 }
 
 export EDITOR=nvim

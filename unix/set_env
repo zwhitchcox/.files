@@ -3,7 +3,6 @@ if [ -z $new_env ]; then
   echo must provide new environment > /dev/stderr
   return 1
 fi
-echo setting environment to $new_env
 echo $new_env > $ENV_FILE
 eval `get_env`
 git config --global --replace-all user.email "$GIT_EMAIL"

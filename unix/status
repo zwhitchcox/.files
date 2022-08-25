@@ -1,8 +1,8 @@
 #!/bin/bash
 
-_unsynced() {
+project_status() {
   ENV=$(cat $ENV_FILE)
-  projects=$(find $DEV_DIR/$ENV -name '.git' -type d)
+  projects=$(find -L $DEV_DIR/$ENV  -type d -name '.git')
   RED='\033[0;31m'
   GREEN='\033[0;32m'
   NC='\033[0m' # No Color
@@ -16,4 +16,8 @@ _unsynced() {
     echo
   done
 }
-column -t <<< $(_unsynced)
+echo Environment: $(cat $ENV_FILE)
+echo Projects:
+column -t <<< $(project_status) | sed 's/^/  /'
+echo Recent Projects:
+cat $DEV_HIST  | awk '!x[$0]++' | tail -n 3 | sed 's/^/  /'
