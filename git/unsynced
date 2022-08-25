@@ -1,0 +1,16 @@
+#!/bin/bash
+
+ENV=$(cat $ENV_FILE)
+projects=$(find $DEV_DIR/$ENV -name '.git' -type d)
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+for proj in ${projects}; do
+  echo -n $(dirname ${proj:$((${#DEV_DIR}+1))})
+  if (cd $proj/..; test -z "$(git status -s)") ; then
+    echo -e "${GREEN} ✓${NC}"
+  else
+    echo -e "${RED} x${NC}"
+  fi
+  echo
+done
