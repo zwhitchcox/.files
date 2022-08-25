@@ -51,6 +51,7 @@ gh_key_del() {
 }
 
 gh_config() {
+  git config --global init.defaultBranch master
   output=$(cat $HOME/.ssh/id_rsa.pub | gh ssh-key add  -t $(cat /etc/hostname) 2>&1)
   test $? -eq 0 && return
   if ! echo $output | grep -q "key is already in use"; then
