@@ -47,6 +47,13 @@ export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
 export DEV_DIR=$HOME/dev
 export DEV_HIST=$HOME/.devhist
+export USR_DIR=$HOME/usr
+
+if [ -d $USR_DIR/balena-cli ]; then
+  if ! which balena &>/dev/null; then
+    export PATH=$PATH:$USR_DIR/balena-cli
+  fi
+fi
 
 HISTSIZE=1000
 HISTFILESIZE=2000
