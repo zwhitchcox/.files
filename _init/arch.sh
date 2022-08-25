@@ -1,3 +1,4 @@
+set -x
 sudo echo -n '' # acquire sudo permissions early
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJPATH=$SCRIPTPATH/../..
@@ -19,6 +20,7 @@ arch_base() {
     jq
 }
 
+
 SRCDIR=$HOME/src
 BINDIR=$HOME/bin
 
@@ -34,10 +36,27 @@ gh_add_host_keys
 test -d $HOME/bin || init_bin
 add_rc common
 add_rc arch
-test -n $REINIT && copy_envs
+test -n $REINIT || copy_envs
 whichq rustup || install_rustup
 test -d $HOME/.nvm || install_nvm
 whichq nvim || install_nvim
 test ! -d $HOME/dev || copy_orgs
 whichq doctl || install_doctl
 ! doctl account get &>/dev/null || doctl_login
+
+install_virtualbox() {
+  set -e
+  local kernel=$(mhwd-kernel -li | sed -re  's/.*(linux[0-9]+).*/\1/' | head -n 1)
+  sudo pacman -Syu virtualbox $kernel-virtualbox-host-modules --noconfirm
+  sudo vboxreload
+  sudo gpasswd -a $USER vboxusers
+  #pamac build virtualbox-ext-oracle-manjaro
+  sudo modprobe vboxguest vboxvideo vboxsf
+  sudo systemctl enable --now vboxservice.service
+  sudo usermod -aG vboxsf ${USER}
+  sudo mkdir /media
+  sudo chmod 755 /media
+  set +e
+}
+
+install_virtualbox &>/dev/null
