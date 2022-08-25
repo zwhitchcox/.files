@@ -1,7 +1,7 @@
 config_git() {
-  local gc="git config --global user"
-  test -n $gc.email || $gc.email $GIT_EMAIL
-  test -n $gc.name || $gc.email $GIT_NAME
+  local gc=""
+  test -n $(git config --global user.email) || git config --global user $GIT_EMAIL
+  test -n $(git config --global user.email) || git config --global user $GIT_NAME
 }
 
 install_snap() {
@@ -95,7 +95,8 @@ err_exit() {
 }
 
 install_rustup() {
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  curl https://sh.rustup.rs -sSf | sh -s -- -y
+  #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 }
 
 install_nvm() {
@@ -105,7 +106,7 @@ install_nvm() {
 
 install_nvim() {
   git clone git@github.com:$GH_USERNAME/config.neovim
-  sudo pacman -S neovim
+  sudo pacman -S neovim --noconfirm
 }
 
 copy_orgs() {

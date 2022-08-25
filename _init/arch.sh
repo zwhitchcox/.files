@@ -8,6 +8,7 @@ if [ -z $REINIT ]; then
   # get environment variables
   source $ENVPATH/base_env
   source $ENVPATH/init_env
+  source $ENVPATH/${GH_USERNAME}_env
 fi
 
 # get utils functions
@@ -24,6 +25,7 @@ arch_base() {
 SRCDIR=$HOME/src
 BINDIR=$HOME/bin
 
+set -x
 mkdir -p $SRCDIR
 whichq git || arch_base
 test -f $HOME/.gitconfig || config_git
