@@ -27,9 +27,14 @@ status_all() {
 }
 
 status_one() {
-  local project=$1
-  if [ $project != "." ]; then
-    cd $DEV_DIR/$ENV/$project
+  local proj_path=$DEV_DIR/$ENV/$1
+  if test -d $1; then
+    cd $1
+  elif test -d $proj_path; then
+    cd $proj_path
+  else
+    echo $1 not found >/dev/stderr
+    exit 1
   fi
   for f in $(git ls-files --others --exclude-standard -z); do
     git add -N $f
