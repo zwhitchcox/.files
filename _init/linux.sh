@@ -2,6 +2,7 @@ config_git() {
   local gc=""
   test -n $(git config --global user.email) || git config --global user $GIT_EMAIL
   test -n $(git config --global user.email) || git config --global user $GIT_NAME
+  git config --global --replace-all core.pager "less -F -X"
 }
 
 install_snap() {
