@@ -74,7 +74,7 @@ init_bin() {
 }
 
 add_rc() {
-  local src_rc="source $BINDIR/_dotfiles/${1}.rc"
+  local src_rc="source $BINDIR/_dotfiles/${1}.rc.sh"
   grep -q "$src_rc" $HOME/$(rcfile) || echo $src_rc >> $HOME/$(rcfile)
 }
 

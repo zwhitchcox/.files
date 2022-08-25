@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 rcfile() {
   echo -e ".$(basename $(echo -e $SHELL))rc"
 }
