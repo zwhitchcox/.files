@@ -38,7 +38,7 @@ if [[ $PWD/ == $HOME/dev/* ]]; then
     fi
   fi
 else
-  echo -n 'It looks like you are outside a project. Continue (Y/n)? ' > /dev/stderr
+  echo -n 'It looks like you are outside a project ('$CUR_ENV'). Continue (Y/n)? ' > /dev/stderr
   read answer
   if [[ "$answer" != *y* ]] && [[ "$answer" != *Y* ]]; then
     exit 1
