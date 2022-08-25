@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
+# output all projects in order of most recently used
+
+relpath() {
+  local p1=$1
+  local p2=$2
+  echo $(dirname ${p2:$((${#p1}+1))}) 
+}
+
+output_all() {
+  local projects=$(find -L $DEV_DIR/$ENV  -type d -name '.git')
+  for project in $projects; do
+    relpath $DEV_DIR $project
+  done
+}
+
 ENV=$(cat $ENV_FILE)
-projects=$(find -L $DEV_DIR/$ENV  -type d -name '.git')
-for project in $projects; do
- echo $(dirname ${project:$((${#DEV_DIR}+1))}) 
-done
+cat <(cat $DEV_HIST) <(output_all)  | awk '!x[$0]++' | sed 's/^/  /'
