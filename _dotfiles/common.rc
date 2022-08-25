@@ -1,7 +1,7 @@
 rcfile() {
   echo -e ".$(basename $(echo -e $SHELL))rc"
 }
-refresh_rc() {
+refresh() {
   source $HOME/$(rcfile)
 }
 add_bin_to_path() {
