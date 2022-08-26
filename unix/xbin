@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# make all bash scripts executable in $HOME/bin
+
+
+dir=${1:-$HOME/bin}
+
+cd $dir
+chmod +x {unix,mac,linux,git}/*
