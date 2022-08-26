@@ -6,4 +6,4 @@
 dir=${1:-$HOME/bin}
 
 cd $dir
-chmod +x {unix,mac,linux,git}/*
+chmod +x {unix,mac,linux,git,project_management,sessions,desktop}/*

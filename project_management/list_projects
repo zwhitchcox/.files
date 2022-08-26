@@ -23,5 +23,7 @@ filter_deleted() {
   done
 }
 
+touch $DEV_HIST
+
 ENV=$(cat $ENV_FILE)
 cat <(tac $DEV_HIST) <(output_all) | awk '!x[$0]++' | sed 's/^/  /' | head -n 10 | filter_deleted

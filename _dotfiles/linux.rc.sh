@@ -8,7 +8,7 @@ refresh() {
 }
 add_bin_to_path() {
   for p in "$@"; do
-    test -d $p && echo $PATH | grep -q "$p" || export PATH=$PATH:$p
+    test -d $p && echo $PATH | grep -q "(^|:)$p(\$|:)" || export PATH=$PATH:$p
   done
 }
 
@@ -27,44 +27,6 @@ switch_env() {
 source_env \
   $HOME/.cargo/env \
   /usr/share/nvm/init-nvm.sh
-
-starts_with() {
-  [[ $1 == $2* ]] && return 0
-  return 1
-}
-
-dev() {
-  if [ -z "$1" ]; then
-    echo "Select a project"
-    dev $(get_selection ""$(list_projects))
-    return 0
-  fi
-
-  local cur_env=$(cat $ENV_FILE)
-  local paths=("${DEV_DIR}" "${DEV_DIR}/${cur_env}"  ".")
-  local project=""
-  for p in ${paths[@]} ; do
-    if [ -d "${p}/${1}/.git" ]; then
-      project="$p/$1"
-      break
-    fi
-  done
-
-  if [ -z "$project" ]; then
-    echo "Couldn't find project $1" 1>&2
-    return 1
-  fi
-
-  if starts_with "$project" "$DEV_DIR"; then
-    echo ${project:$((${#DEV_DIR}+1))} >> $DEV_HIST
-  fi
-
-  cd "$project"
-
-  if [ -z $VIMRUNTIME ]; then
-    vim .
-  fi
-}
 
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV

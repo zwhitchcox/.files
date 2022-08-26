@@ -1,5 +1,34 @@
 #!/usr/bin/env bash
 
+SHORT="n"
+LONG=number
+OPTS=$(getopt -a -n get_selection --options $SHORT --longoptions $LONG -- "$@")
+
+VALID_ARGUMENTS=$# # Returns the count of arguments that are in short or long options
+
+help() {
+  echo "Usage: $(basename $0) [-iu] packages" 1>&2
+}
+
+eval set -- "$OPTS"
+
+while :
+do
+  case "$1" in
+    -n | --number )
+      by_number=true
+      shift 1
+      ;;
+    --)
+      shift;
+      break
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 # https://unix.stackexchange.com/a/415155
 # Renders a text based list of options that can be selected by the
 # user using up, down and enter keys and returns the chosen option.
@@ -74,11 +103,16 @@ function select_option {
 
     # cursor position back to normal
     cursor_to $lastrow
-    printf "\n"
     cursor_blink_on
 
     return $selected
 }
 
-select_option ${@} 1>/dev/tty 2>/dev/tty
-echo ${@:$(($?+1)):1}
+
+select_option "$@" 1>/dev/tty 2>/dev/tty
+result=$?
+if [ "$by_number" == "true" ]; then
+  echo $(($result+1))
+else
+  echo ${@:$(($result+1)):1}
+fi

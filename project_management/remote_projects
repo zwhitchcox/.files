@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+gh repo list --limit 500  --json name -t '{{range .}}{{(printf "%v\n" .name)}}{{end}}'

@@ -24,7 +24,7 @@ test -f ~/.ssh/id_rsa || keygen
 gh_config
 gh_add_host_keys
 test -d $HOME/bin || init_bin
-add_rc common
+add_rc linux
 add_rc arch
 test -n $REINIT || copy_envs
 whichq rustup || install_rustup

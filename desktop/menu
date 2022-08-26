@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+commands=(
+  calendar
+  mail
+)
+users=(
+  zwhitchcox
+  balena
+)
+
+calendar() {
+  clear
+  local user=$(get_selection -n "${users[@]}")
+  firefox https://calendar.google.com/calendar/u/$user/r
+}
+
+mail() {
+  clear
+  local user=$(get_selection -n "${users[@]}")
+  firefox https://mail.google.com/mail/u/$user/#inbox
+}
+
+clear
+eval $(get_selection "${commands[@]}" )
