@@ -37,7 +37,7 @@ if starts_with "$project" "$DEV_DIR"; then
   test "$p" != "." && echo "$p" >> $DEV_HIST
 fi
 if [ -z $TMUX ]; then
-  tmux new-session -c $project
+  tmux new-session -c $project 
 else
   cd "$project"
 
