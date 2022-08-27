@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# display all current variables
+tmux display -a

@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/env bash
 
 # helpers
 starts_with() {
@@ -60,10 +60,20 @@ else
   hist_file=$HOME/.zsh_history
 fi
 
+window_name=$relpath
+
+contains() {
+  while read line; do 
+    if [ "$line" == "$1" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 mkdir -p ${hist_file%/*}
 if [ -z $TMUX ]; then
   session_name=$(tty)
-  window_name=$relpath
   tmux new-session -d -c "$project" \
     -e "hist_file=$hist_file" \
     -e status_shown=false \
@@ -72,8 +82,24 @@ if [ -z $TMUX ]; then
   tmux send-keys -t "$session_name" " dev ." Enter
   tmux attach -t "$session_name"
 else
-  cd "$project"
-  if [ -z $VIMRUNTIME ]; then
-    $EDITOR $project
+  cur_sess=$(tmux display -p -F '#{session_id}')
+  cur_win=$(tmux display -p -F '#{window_name}')
+  windows=$(tmux list-windows -t $cur_sess -F '#{window_name}')
+  if [ "$cur_win" == "$window_name" ]; then
+    if [ -z $VIMRUNTIME ]; then
+      cd "$project"
+      $EDITOR $project
+    fi
+  elif echo "$windows" |  contains "$window_name"; then
+    echo found $window_name
+    tmux select-window -t $window_name
+  else
+    echo creating $window_name
+    tmux new-window -d -c "$project" \
+      -e "hist_file=$hist_file" \
+      -e status_shown=false \
+      -t "$cur_sess" \
+      -n "$window_name"
+    tmux send-keys -t "$session_name" " dev ." Enter
   fi
 fi
