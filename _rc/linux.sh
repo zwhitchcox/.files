@@ -33,6 +33,21 @@ export ENV_FILE=$HOME/.config/CUR_ENV
 export DEV_DIR=$HOME/dev
 export DEV_HIST=$HOME/.devhist
 export USR_DIR=$HOME/usr
+if [ -n "$hist_file" ]; then
+  export HISTFILE="$hist_file"
+fi
+export HISTSIZE=100000
+export HISTFILESIZE=200000
+export HISTCONTROL=ignoreboth:erasedups
+export EDITOR=nvim
+alias vim=nvim
+
+
+# # Appends every command to the history file once it is executed
+ setopt inc_append_history
+# # Reloads the history whenever you use it
+ setopt share_history
+ setopt HIST_IGNORE_SPACE
 
 if [ -d $USR_DIR/balena-cli ]; then
   if ! which balena &>/dev/null; then
@@ -40,8 +55,6 @@ if [ -d $USR_DIR/balena-cli ]; then
   fi
 fi
 
-HISTSIZE=1000
-HISTFILESIZE=2000
 
 # text
 alias lower="tr '[:upper:]' '[:lower:]'"

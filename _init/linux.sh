@@ -1,3 +1,4 @@
+
 config_git() {
   local gc=""
   test -n $(git config --global user.email) || git config --global user $GIT_EMAIL
@@ -25,7 +26,6 @@ gh_login() {
 keygen() {
   ssh-keygen -C $GIT_EMAIL -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ''
 }
-
 
 # get list of keys
 gh_list_keys() {
@@ -76,8 +76,12 @@ init_bin() {
 }
 
 add_rc() {
-  local src_rc="source $BINDIR/_dotfiles/${1}.rc.sh"
+  local src_rc="source $BINDIR/_rc/${1}.sh"
   grep -q "$src_rc" $HOME/$(rcfile) || echo $src_rc >> $HOME/$(rcfile)
+}
+
+ln_dotfiles() {
+  ln -s $BINDIR/_dotfiles/.tmux.conf $HOME/.tmux.conf
 }
 
 copy_envs() {
@@ -133,4 +137,5 @@ install_balena() {
   unzip -d $USR_DIR $dlpath 
   set +e
 }
+
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 sudo echo -n '' # acquire sudo permissions early
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 export PROJPATH=$SCRIPTPATH/..

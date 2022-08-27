@@ -1,0 +1,79 @@
+#!/usr/bin/zsh
+
+# helpers
+starts_with() {
+  [[ $1 == $2 ]] || [[ $1 == $2* ]] || return 1
+}
+
+normalize_path() {
+  local normalized="$1"
+  if starts_with "$normalized" "."; then
+    normalized="$PWD/$normalized"
+  fi
+  echo "$normalized" | tr -s / | sed 's/\/\.\//\//g' | sed 's/\/\.$//'
+}
+
+if [ -z "$1" ]; then
+  echo "Select a project"
+  dev $(get_selection $(list_projects))
+  return $?
+fi
+
+# make absolute if relative
+start_path=$1
+normalized="$(normalize_path $start_path)"
+
+cur_env=$(cat $ENV_FILE)
+paths=("${DEV_DIR}/${cur_env}" "${DEV_DIR}" "." "/")
+project=""
+for p in "${paths[@]}" ; do
+  if [ -d "${p}/${normalized}/.git" ]; then
+    project=$(normalize_path "$p/$normalized")
+    break
+  fi
+done
+
+if [ -z "$project" ]; then
+  echo -n "Couldn't find project $1."
+  if [ "$(normalize_path $1)" != "$PWD" ]; then
+    create_dir=$cur_env/$1
+  else
+    create_dir=$start_path
+  fi
+  if getyn "Init project in $create_dir (Y/n)? "; then
+    init_project $create_dir
+    dev $create_dir
+    exit $?
+  fi
+  exit 1
+fi
+
+# if not in dev dir, use absolute path
+if starts_with "$project" "$DEV_DIR/"; then
+  relpath=${project:$((${#DEV_DIR}+1))}
+  # give each project its own history
+  hist_file=$HOME/.histories/.zsh_history_$(echo $relpath | sed 's/\//_/g')
+  # for tracking most recently used projects
+  echo $relpath >> $DEV_HIST
+else 
+  relpath=$project
+  hist_file=$HOME/.zsh_history
+fi
+
+mkdir -p ${hist_file%/*}
+if [ -z $TMUX ]; then
+  session_name=$(tty)
+  window_name=$relpath
+  tmux new-session -d -c "$project" \
+    -e "hist_file=$hist_file" \
+    -e status_shown=false \
+    -s "$session_name" \
+    -n "$window_name"
+  tmux send-keys -t "$session_name" " dev ." Enter
+  tmux attach -t "$session_name"
+else
+  cd "$project"
+  if [ -z $VIMRUNTIME ]; then
+    $EDITOR $project
+  fi
+fi
