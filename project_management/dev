@@ -89,17 +89,22 @@ else
     if [ -z $VIMRUNTIME ]; then
       cd "$project"
       $EDITOR $project
+    else
+      if [ "$project" != "$PWD" ]; then
+        cd $project
+      else
+        echo already on $window_name
+      fi
     fi
   elif echo "$windows" |  contains "$window_name"; then
-    echo found $window_name
     tmux select-window -t $window_name
   else
-    echo creating $window_name
     tmux new-window -d -c "$project" \
       -e "hist_file=$hist_file" \
       -e status_shown=false \
       -t "$cur_sess" \
       -n "$window_name"
-    tmux send-keys -t "$session_name" " dev ." Enter
+    tmux select-window -t $window_name
+    tmux send-keys -t "$window_name" " dev ." Enter
   fi
 fi
