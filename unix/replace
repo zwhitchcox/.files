@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+sed -i $@ $(git ls-files | grep -Ev '\.(png|jpe?g|ico)$')

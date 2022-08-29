@@ -23,14 +23,14 @@ elif ! test -d $DEV_DIR/${project_name%%/*} ; then
   project_name="$cur_env/$project_name"
 else
   # otherwise, they gave an environment as the first path part, so use that
-  if isyes "Switch to ${project_name%%/*} (Y/n)? "; then
+  if getyn "Switch to ${project_name%%/*} (Y/n)? "; then
     switch_env ${project_name%%/*}
     cur_env=$(cat $ENV_FILE)
   fi
 fi
 
 if remote_projects | grep -i ${project_name##*/} ; then
-  if isyes $project_name already exists. Clone it? ; then
+  if getyn $project_name already exists. Clone it? ; then
     git clone 
   fi
 fi

@@ -45,7 +45,7 @@ if [ -z "$cmd" ]; then
 fi
 
 if [ $cmd == install ]; then
-  sudo pacman -Syyu --noconfirm $@
+  sudo pacman -S --noconfirm $@
 elif [ $cmd == u ]; then
   sudo pacman -R --noconfirm $@
 fi

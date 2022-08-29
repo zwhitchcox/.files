@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 # helpers
 starts_with() {
@@ -60,8 +61,7 @@ else
   hist_file=$HOME/.zsh_history
 fi
 
-window_name=$relpath
-
+window_name="$(echo "$relpath" | sed 's/\./_dot_/g')"
 contains() {
   while read line; do 
     if [ "$line" == "$1" ]; then
@@ -104,7 +104,7 @@ else
       -e status_shown=false \
       -t "$cur_sess" \
       -n "$window_name"
-    tmux select-window -t $window_name
+    tmux select-window -t "$window_name"
     tmux send-keys -t "$window_name" " dev ." Enter
   fi
 fi

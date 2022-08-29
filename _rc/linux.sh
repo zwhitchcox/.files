@@ -21,6 +21,7 @@ source_env() {
 switch_env() {
   set_env $1
   eval `get_env`
+  export DEV_HIST="$HOME/.$(echo $GIT_EMAIL | sed 's/@/_/g' | sed 's/\./_/g').devhist"
   status
 }
 
@@ -31,7 +32,6 @@ source_env \
 export EDITOR=nvim
 export ENV_FILE=$HOME/.config/CUR_ENV
 export DEV_DIR=$HOME/dev
-export DEV_HIST=$HOME/.devhist
 export USR_DIR=$HOME/usr
 if [ -n "$hist_file" ]; then
   export HISTFILE="$hist_file"
