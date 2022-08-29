@@ -9,10 +9,11 @@ relpath() {
 }
 
 output_all() {
-  local projects=$(find -L $DEV_DIR/$ENV  -type d -name '.git')
+  local projects=$(find -L $DEV_DIR/$ENV -type d -name '.git')
   for project in $projects; do
     relpath $DEV_DIR $project
   done
+  local worktrees=
 }
 
 

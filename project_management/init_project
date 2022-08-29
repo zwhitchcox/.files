@@ -1,43 +1,19 @@
 #!/bin/bash
-
 eexist() {
   echo "$1" already exists
   exit 17
 }
 
-project_name=${1}
+project_path=$1
 
-if [ -z $project_name ]; then
-  echo -n "Enter project name: "
-  read project_name
-fi
-
-cur_env=$(cat $ENV_FILE)
-
-# get project name/path
-if ! echo "$project_name" | grep -q '/' ; then
-  # user didn't specify environment
-  project_name=$cur_env/$project_name
-elif ! test -d $DEV_DIR/${project_name%%/*} ; then
-  # first path part is not an environment, so use current env
-  project_name="$cur_env/$project_name"
-else
-  # otherwise, they gave an environment as the first path part, so use that
-  if getyn "Switch to ${project_name%%/*} (Y/n)? "; then
-    switch_env ${project_name%%/*}
-    cur_env=$(cat $ENV_FILE)
-  fi
-fi
-
-if remote_projects | grep -i ${project_name##*/} ; then
-  if getyn $project_name already exists. Clone it? ; then
-    git clone 
-  fi
-fi
+# if remote_projects | grep -i ${project_name##*/} ; then
+#   if getyn $project_name already exists. Clone it? ; then
+#     git clone 
+#   fi
+# fi
 
 # create and cd to project path
-echo "initializing $DEV_DIR/$project_name"
-project_path="$DEV_DIR/$project_name"
+echo "initializing $project_path"
 test -d "$project_path" && eexist "$project_name"
 mkdir -p "$project_path" && cd "$project_path"
-
+git init

@@ -24,8 +24,9 @@ test -f ~/.ssh/id_rsa || keygen
 gh_config
 gh_add_host_keys
 test -d $HOME/bin || init_bin
-add_rc linux
-add_rc arch
+local src_rc='source $HOME/dev/$USER/bin/_rc/'$1'.sh'
+add_rc '$HOME/dev/$USER/bin/_rc/'linux.sh
+add_rc '$HOME/dev/$USER/bin/_rc/'arch.sh
 test -n $REINIT || copy_envs
 whichq rustup || install_rustup
 test -d $HOME/.nvm || install_nvm
