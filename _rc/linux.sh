@@ -59,3 +59,4 @@ fi
 # text
 alias lower="tr '[:upper:]' '[:lower:]'"
 alias upper="tr '[:lower:]' '[:upper:]'"
+

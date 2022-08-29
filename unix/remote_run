@@ -18,9 +18,9 @@ if [ -z "$script" ]; then
 fi
 
 shift 1;
-if [ -z "$(which $script)" ]; then
+if [ ! -f $script ]; then
   echo script does not exist
   exit 1
 fi
 
-ssh $host "bash -s" <$(which $script) $@;
+ssh $host "bash -s" <(cat "$script") $@;

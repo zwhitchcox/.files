@@ -1,4 +1,5 @@
-add_bin_to_path $HOME/bin/{unix,linux,git,project_management,sessions,desktop}
+add_bin_to_path "$HOME/dev/$USER/bin/"{unix,linux,git,project_management,sessions,desktop}
+add_bin_to_path $HOME/dev/$USER/devops/scripts
 KEY_DIR=/run/media/$USER/KEY
 switch_env $(cat $ENV_FILE)
 if [ "$status_shown" != true ] && [ -n "$VIMRUNTIME" ] && [ -n "$TMUX" ] ; then
