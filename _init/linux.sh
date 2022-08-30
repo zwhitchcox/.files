@@ -1,11 +1,3 @@
-
-config_git() {
-  local gc=""
-  test -n $(git config --global user.email) || git config --global user $GIT_EMAIL
-  test -n $(git config --global user.email) || git config --global user $GIT_NAME
-  git config --global --replace-all core.pager "less -F -X"
-}
-
 install_snap() {
   git clone https://aur.archlinux.org/snapd.git $SRCDIR
   sudo systemctl enable --now snapd.socket
@@ -17,21 +9,28 @@ install_gh() {
 }
 
 gh_login() {
-  echo $_GH_TOKEN | gh auth login \
+  echo $GH_TOKEN | gh auth login \
     -h github.com \
     -p ssh \
     --with-token 
 }
 
 keygen() {
-  ssh-keygen -C $GIT_EMAIL -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ''
-}
+  set -e
+  local email="$(curl \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: token $GH_TOKEN" \
+    https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email')"
+  ssh-keygen -C $email -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ''
+  set +e
+
+
 
 # get list of keys
 gh_list_keys() {
   curl \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: token $_GH_TOKEN" \
+    -H "Authorization: token $GH_TOKEN" \
     https://api.github.com/user/keys
 }
 
@@ -51,9 +50,7 @@ gh_key_del() {
 }
 
 gh_config() {
-  git config --global init.defaultBranch master
-  git config --global submodule.recurse true
-  output=$(cat $HOME/.ssh/id_rsa.pub | gh ssh-key add  -t $(cat /etc/hostname) 2>&1)
+  output=$(cat $HOME/.ssh/id_rsa.pub | gh ssh-key add -t $(cat /etc/hostname) 2>&1)
   test $? -eq 0 && return
   if ! echo $output | grep -q "key is already in use"; then
     echo -e "could not add key\n$output" > /dev/stderr
@@ -61,12 +58,6 @@ gh_config() {
   fi
 }
 
-# add github host keys to known hosts
-gh_add_host_keys() {
-  local key_file=$HOME/.ssh/known_hosts
-  local keys=$(ssh-keyscan -H github.com 2>/dev/null)
-  (echo $keys ; cat $key_file) | sort | uniq -u > $key_file
-}
 
 init_bin() {
   pushd $HOME
@@ -139,5 +130,3 @@ install_balena() {
   unzip -d $USR_DIR $dlpath 
   set +e
 }
-
-

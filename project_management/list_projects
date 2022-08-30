@@ -13,7 +13,6 @@ output_all() {
   for project in $projects; do
     relpath $DEV_DIR $project
   done
-  local worktrees=
 }
 
 
