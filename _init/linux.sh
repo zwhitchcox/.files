@@ -82,6 +82,8 @@ add_rc() {
 
 ln_dotfiles() {
   ln -s $BINDIR/_dotfiles/.tmux.conf $HOME/.tmux.conf
+  ln -s $BINDIR/_dotfiles/.vimrc $HOME/.vimrc
+  ln -s $BINDIR/_dotfiles/.gitconfig $HOME/.gitconfig
 }
 
 copy_envs() {

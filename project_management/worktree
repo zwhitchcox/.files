@@ -1,3 +1,33 @@
 #!/usr/bin/env bash
 
-branch_name=$1
+help() {
+  echo "Create a new git worktree."
+  echo "worktree [path] branch name"
+  exit
+}
+
+usage() {
+  help 1>&2
+  exit 1
+}
+
+if [ $# == 2 ]; then
+  p=$1
+  branch=$2
+elif [ $# == 1 ]; then
+  p=$PWD
+  branch=$1
+else
+  usage
+fi
+
+cd $p
+
+dest=$(dirname $p)/$branch
+if [ -d $dest ]; then
+  echo "There is already a directory at $dest" 1>&2
+  exit 1
+fi
+
+git worktree add -b $branch $dest $(git config init.defaultBranch)
+dev $dest

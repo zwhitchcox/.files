@@ -12,7 +12,7 @@ install_nvim() {
 }
 
 SRCDIR=$HOME/src
-BINDIR=$HOME/bin
+BINDIR="$HOME/dev/$USER/bin"
 
 mkdir -p $SRCDIR
 whichq git || arch_base

@@ -1,0 +1,5 @@
+[include]
+  path = ~/dev/.gitconfig
+[user]
+	email = zwhitchcox@gmail.com
+	name = Zane Hitchcox
