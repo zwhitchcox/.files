@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+pd=$(project_dir)
+cd $pd
+filter_exists() {
+  local in;
+  while read in; do
+    test -d "$pd/${in##*/}" || echo "$in"
+  done
+}
+selection=$(remote_projects | filter_exists | tac | fzf)
+git clone --recurse-submodules git@github.com:$selection
+dev ${selection##/*}

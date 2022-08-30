@@ -130,3 +130,8 @@ install_balena() {
   unzip -d $USR_DIR $dlpath 
   set +e
 }
+
+install_fzf() {
+  # https://github.com/junegunn/fzf
+  pkg -i fzf
+}

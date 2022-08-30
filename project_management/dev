@@ -77,6 +77,7 @@ fi
 if ! starts_with "$project" "/"; then
   # give each project its own history
   hist_file=$HOME/.histories/.zsh_history_$(echo $project | sed 's/\//_/g')
+  echo $project >> $DEV_HIST
 fi
 
 window_name="$(echo "$project" | sed 's/\./_/g')"
