@@ -1,26 +1,28 @@
 #!/bin/bash
-
 usage() {
   remote_run HOST PATH/TO/SCRIPT
 }
+
+err_exit() {
+  echo "$@" 1>&2
+  exit 1
+}
+
 host=$1
-if [ -z "$host" ]; then
-  echo host is required > /dev/stderr
-  exit 1
-fi
+shift 1
+while [ "$1" != "--" ] && [ -n "$1" ]; do
+  scripts="$scripts $1"
+  shift 1
+done
 
-shift 1;
+[ -n "$host" ] || err_exit host is required
+[ -n "$scripts" ] || err_exit script is required
 
-script=$1
-if [ -z "$script" ]; then
-  echo script is required > /dev/stderr
-  exit 1
-fi
+for script in $scripts; do 
+  if [ ! -f "$script" ]; then
+    echo script does not exist
+    exit 1
+  fi
+done
 
-shift 1;
-if [ ! -f $script ]; then
-  echo script does not exist
-  exit 1
-fi
-
-ssh $host "bash -s" <(cat "$script") $@;
+cat $scripts | ssh $host "bash -s" $@;
