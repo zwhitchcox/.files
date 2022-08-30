@@ -8,6 +8,11 @@ filter_exists() {
     test -d "$pd/${in##*/}" || echo "$in"
   done
 }
-selection=$(remote_projects | filter_exists | tac | fzf)
+
+if [ -n "$1" ]; then
+  selection=$(remote_projects | filter_exists | tac | fzf)
+else
+  selection=$1
+fi
 git clone --recurse-submodules git@github.com:$selection
 dev ${selection##/*}

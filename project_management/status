@@ -1,46 +1,47 @@
 #!/bin/bash
+exit
 
-ENV=$(cat $ENV_FILE)
-
-all_project_status() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  NC='\033[0m' # No Color
-  for proj in $(list_projects); do
-    echo -n $proj
-    if (cd $DEV_DIR/$proj; test -z "$(git status -s)") ; then
-      echo -e "${GREEN} ✓${NC}"
-    else
-      echo -e "${RED} x${NC}"
-    fi
-    echo
-  done
-}
-
-status_all() {
-  echo Environment: $ENV
-  echo Projects:
-  column -t <<< $(all_project_status) | sed 's/^/  /'
-}
-
-status_one() {
-  local proj_path=$DEV_DIR/$ENV/$1
-  if test -d $1; then
-    cd $1
-  elif test -d $proj_path; then
-    cd $proj_path
-  else
-    echo $1 not found >/dev/stderr
-    exit 1
-  fi
-  for f in $(git ls-files --others --exclude-standard -z); do
-    git add -N $f
-  done
-  git diff
-}
-
-if [ -z $1 ]; then
-  status_all
-else
-  status_one $@
-fi
+# ENV=$(cat $ENV_FILE)
+#
+# all_project_status() {
+#   RED='\033[0;31m'
+#   GREEN='\033[0;32m'
+#   NC='\033[0m' # No Color
+#   for proj in $(recent_projects); do
+#     echo -n $proj
+#     if (cd $DEV_DIR/$proj; test -z "$(git status -s)") ; then
+#       echo -e "${GREEN} ✓${NC}"
+#     else
+#       echo -e "${RED} x${NC}"
+#     fi
+#     echo
+#   done
+# }
+#
+# status_all() {
+#   echo Environment: $ENV
+#   echo Projects:
+#   column -t <<< $(all_project_status) | sed 's/^/  /'
+# }
+#
+# status_one() {
+#   local proj_path=$DEV_DIR/$ENV/$1
+#   if test -d $1; then
+#     cd $1
+#   elif test -d $proj_path; then
+#     cd $proj_path
+#   else
+#     echo $1 not found >/dev/stderr
+#     exit 1
+#   fi
+#   for f in $(git ls-files --others --exclude-standard -z); do
+#     git add -N $f
+#   done
+#   git diff
+# }
+#
+# if [ -z $1 ]; then
+#   status_all
+# else
+#   status_one $@
+# fi
