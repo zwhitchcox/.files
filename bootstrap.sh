@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 sudo echo -n '' # acquire sudo permissions early
-set -x
 
 export PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
 
@@ -42,13 +41,17 @@ update_sources() {
 pkg_apt() {
   if [ $PLATFORM == linux ] && exists apt; then
     sudo apt install -y $@
+    return $?
   fi
+  return 1
 }
 
 pkg_pacman() {
   if [ $PLATFORM == linux ] && exists pacman; then
     sudo pacman -S --noconfirm $@
+    return $?
   fi
+  return 1
 }
 
 pkg_brew() {
@@ -57,13 +60,21 @@ pkg_brew() {
   fi
   if [ $PLATFORM == darwin ]; then
     brew install $@
+    return $?
   fi
+  return 1
 }
 
 pkg_snap() {
   if [ $platform == linux ] && exists snap; then
     snap install $@
+    return $?
   fi
+  return 1
+}
+
+pkg_all() {
+  pkg_pacman $1 || pkg_brew $1 || pkg_apt $1 || pkg_snap $1
 }
 
 check_token() {
@@ -169,15 +180,19 @@ add_rc() {
 }
 
 ln_dotfiles() {
-  for f in $BINDIR/_dotfiles/*; do
-    local bn=$(basename $f)
-    local source=$HOME/$bn
-    local target=$BINDIR/_dotfiles/$bn
-    if [ -f $source ] && [ "$(readlink $source)" != $target ]; then
-      err_exit $target already exists
+  set -x
+  for base in $(ls -a $BINDIR/_dotfiles | grep -Ev '^\.+$'); do
+    local target=$BINDIR/_dotfiles/$base
+    local source=$HOME/$(basename $target)
+    if [ -L $source ]; then
+      [ "$(readlink $source)" != $target ] && err_exit "$target already exists"
+    elif [ -f $source ]; then
+      err_exit "$target already exists"
+    else
+      ln -s $target $source
     fi
-    ln -s $target $source
   done
+  set +x
 }
 
 whichq() {
@@ -212,22 +227,12 @@ install_balena() {
   set +e
 }
 
-install_fzf() {
-  # https://github.com/junegunn/fzf
-  pkg_apt fzf
-  pkg_pacman fzf
-  pkg_brew fzf
-}
-
 base_pkg() {
   whichq make || pkg_pacman base-devel git jq
   whichq make || pkg_apt build-essential unzip jq
   whichq make || base_darwin
 }
 
-pkg_all() {
-  pkg_pacman $1 || pkg_brew $1 || pkg_apt $1 || pkg_snap $1
-}
 
 base_darwin() {
   if [ $PLATFORM == darwin ] && ! exists git; then
@@ -246,7 +251,7 @@ install_nvim() {
   set -e
   mkdir -p ~/.config
   ln -sf $HOME/dev/$USER/config.nvim $HOME/.config/nvim
-  pkg_all neovim
+  whichq nvim || pkg_all neovim
   set +e
 }
 
@@ -281,6 +286,7 @@ whichq doctl || pkg_all doctl
 whichq jq || pkg_all jq
 whichq rg || pkg_all ripgrep
 whichq tmux || pkg_all tmux
+whichq fzf || pkg_all fzf
 install_nvim
 test -d $HOME/.nvm || install_nvm
 test -d $USRDIR/balena-cli || install_balena
@@ -295,4 +301,4 @@ doctl account get &>/dev/null || doctl_login
 # dev
 clone_dev
 ln_dotfiles
-add_rc '$HOME/rc.sh'
+add_rc '$HOME/.rc.sh'
