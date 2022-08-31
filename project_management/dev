@@ -85,8 +85,8 @@ else
   if [ "$cur_win" == "$window_name" ]; then
     if [ -z $VIMRUNTIME ]; then
       $EDITOR "$project_full"
-    elif [ "$project" == "$PWD" ]; then
-      echo already on $window_name 1>&2
+    # elif [ "$project" != "$PWD" ]; then
+    #   cd $project
     else
       echo already on $window_name 1>&2 # can't cd, todo
     fi
