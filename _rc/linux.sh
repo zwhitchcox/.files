@@ -37,11 +37,16 @@ export EDITOR=nvim
 export DEV_HIST="$HOME/.devhist"
 alias vim=nvim
 
+whichq() {
+  which "$1" &>/dev/null
+  return $?
+}
 
-# # Appends every command to the history file once it is executed
-if [ -n "$(which setopt)" ]; then
+
+if whichq setopt; then
+  # # Appends every command to the history file once it is executed
  setopt inc_append_history
-# # Reloads the history whenever you use it
+  # # Reloads the history whenever you use it
  setopt share_history
  setopt HIST_IGNORE_SPACE
 fi
