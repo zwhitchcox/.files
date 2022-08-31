@@ -280,6 +280,7 @@ whichq gh || pkg_all gh
 whichq doctl || pkg_all doctl
 whichq jq || pkg_all jq
 whichq rg || pkg_all ripgrep
+whichq tmux || pkg_all tmux
 install_nvim
 test -d $HOME/.nvm || install_nvm
 test -d $USRDIR/balena-cli || install_balena
