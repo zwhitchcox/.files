@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+strip_DEVDIR() {
+  local my_path=$(realpath $1)
+  [[ $my_path/* == $DEVDIR/* ]] && echo ${my_path:$((${#DEVDIR}+1))} && return 0
+  return 1
+}
+
 # output all projects in order of most recently used
 relpath() {
   local p1=$1
@@ -10,7 +16,7 @@ relpath() {
 output_all() {
   local projects=$(find -L $DEVDIR/$ENV -type d -name '.git')
   for project in $projects; do
-    relpath $DEVDIR $project
+    strip_DEVDIR $project
   done
 }
 

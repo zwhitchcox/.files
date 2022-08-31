@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 starts_with() {
   [[ $1 == $2 ]] || [[ $1 == $2* ]] || return 1
@@ -27,7 +28,8 @@ strip_DEVDIR() {
 
 check_dirs() {
   for dir in $@; do
-    local p=$(realpath $dir)
+    local p=$(realpath "$dir" 2>/dev/null)
+    [ -z "$p" ] && continue
     if [ -d $p ]; then
       project=$(strip_DEVDIR $p)
       project_full=$p
