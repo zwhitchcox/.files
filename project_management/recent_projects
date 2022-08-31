@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # output all projects in order of most recently used
-
 relpath() {
   local p1=$1
   local p2=$2
@@ -19,11 +18,10 @@ output_all() {
 filter_deleted() {
   local in;
   while read in; do
-    test -d "$DEV_DIR/$in/.git" && echo "$in"
+    test -r "$DEV_DIR/$in/.git" && [ -n "$in" ] && echo "$in"
   done
 }
 
 touch $DEV_HIST
 
-ENV=$(cat $ENV_FILE)
 cat <(tac $DEV_HIST) <(output_all) | awk '!x[$0]++' | sed 's/^/  /' | head -n 10 | filter_deleted
