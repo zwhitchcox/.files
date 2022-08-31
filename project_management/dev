@@ -12,8 +12,9 @@ err_exit() {
 if [ -z "$1" ]; then
   echo "Select a project"
   dev $(get_selection $(recent_projects))
-  return $?
+  exit $?
 fi
+
 
 DEVDIR=$(realpath "$DEVDIR")
 ENV_DIR=$(realpath "$DEVDIR/$(get_env)")

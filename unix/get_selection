@@ -1,31 +1,21 @@
 #!/usr/bin/env bash
 
-SHORT="n"
-LONG=number
-OPTS=$(getopt -a -n get_selection --options $SHORT --longoptions $LONG -- "$@")
+args=`getopt n $*`
 
-VALID_ARGUMENTS=$# # Returns the count of arguments that are in short or long options
-
-help() {
-  echo "Usage: $(basename $0) [-iu] packages" 1>&2
-}
-
-eval set -- "$OPTS"
-
-while :
-do
+if [ $? -ne 0 ]; then
+       echo 'Usage: ...'
+       exit 2
+fi
+set -- $args
+while :; do
   case "$1" in
-    -n | --number )
-      by_number=true
-      shift 1
-      ;;
-    --)
-      shift;
-      break
-      ;;
-    *)
-      break
-      ;;
+  -n)
+    echo by_number=true
+    shift
+    ;;
+  --)
+    shift; break
+    ;;
   esac
 done
 
