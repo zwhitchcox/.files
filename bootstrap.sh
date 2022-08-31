@@ -226,11 +226,7 @@ base_pkg() {
 }
 
 pkg_all() {
-  if ! whichq $1; then
-    pkg_pacman $1
-    pkg_brew $1
-    pkg_apt $1
-  fi
+  pkg_pacman $1 || pkg_brew $1 || pkg_apt $1 || pkg_snap $1
 }
 
 base_darwin() {
@@ -250,9 +246,7 @@ install_nvim() {
   set -e
   mkdir -p ~/.config
   ln -sf $HOME/dev/$USER/config.nvim $HOME/.config/nvim
-  pkg_apt neovim
-  pkg_pacman neovim
-  pkg_brew neovim
+  pkg_all neovim
   set +e
 }
 
@@ -281,10 +275,11 @@ mkdir -p $USRDIR
 update_sources
 base_pkg
 whichq snap || install_snap
-whichq gh || pkg_snap gh || pkg_brew gh
-whichq doctl || pkg_snap doctl || pkg_brew doctl
 whichq rustup || install_rustup
-pkg_all jq
+whichq gh || pkg_all gh
+whichq doctl || pkg_all doctl
+whichq jq || pkg_all jq
+whichq rg || pkg_all ripgrep
 install_nvim
 test -d $HOME/.nvm || install_nvm
 test -d $USRDIR/balena-cli || install_balena
