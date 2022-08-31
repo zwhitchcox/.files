@@ -38,10 +38,12 @@ alias vim=nvim
 
 
 # # Appends every command to the history file once it is executed
+if [ -n $(which setopt) ]; then
  setopt inc_append_history
 # # Reloads the history whenever you use it
  setopt share_history
  setopt HIST_IGNORE_SPACE
+fi
 
 if [ -d $USR_DIR/balena-cli ]; then
   if ! which balena &>/dev/null; then
