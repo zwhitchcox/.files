@@ -58,7 +58,7 @@ alias lower="tr '[:upper:]' '[:lower:]'"
 alias upper="tr '[:lower:]' '[:upper:]'"
 
 add_bin_to_path "$HOME/dev/$USER/bin/"{unix,linux,git,project_management,sessions,desktop}
-add_bin_to_path $HOME/dev/$USER/devops/scripts
+add_bin_to_path $HOME/dev/$USER/devops/deploy
 if [ "$status_shown" != true ] && [ -n "$VIMRUNTIME" ] && [ -n "$TMUX" ] ; then
   status
   export status_shown=true
