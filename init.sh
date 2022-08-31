@@ -6,11 +6,15 @@ export ENVPATH=$PROJPATH/env
 export USR_DIR=$HOME/usr
 
 if [ $(uname -s | tr '[:upper:]' '[:lower:]') == linux ]; then
+  set -e
   source $SCRIPTPATH/_init/linux.sh
+  set +e
 fi
 
 if lsb_release -i | grep -qi manjaro ; then
   source $SCRIPTPATH/_init/arch.sh
+elif lsb_release -i | grep -qi ubuntu; then
+  source $SCRIPTPATH/_init/ubuntu.sh
 else
   echo no script for installing your os. please add one to ./bin/_init
 fi

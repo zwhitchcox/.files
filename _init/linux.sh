@@ -23,8 +23,7 @@ keygen() {
     https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email')"
   ssh-keygen -C $email -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ''
   set +e
-
-
+}
 
 # get list of keys
 gh_list_keys() {
@@ -58,14 +57,6 @@ gh_config() {
   fi
 }
 
-
-init_bin() {
-  pushd $HOME
-  git clone git@github.com:$GH_USERNAME/bin.git $BINDIR || exit 1
-  cd $BINDIR
-  popd
-}
-
 add_rc() {
   local src_rc="source $1"
   grep -q "$src_rc" $HOME/$(rcfile) || echo $src_rc >> $HOME/$(rcfile)
@@ -95,8 +86,7 @@ err_exit() {
 }
 
 install_rustup() {
-  curl https://sh.rustup.rs -sSf | sh -s -- -y
-  #curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
 }
 
 install_nvm() {

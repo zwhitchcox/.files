@@ -3,3 +3,4 @@ todo: system clipboard over ssh
 todo: run in docker
 todo: encrypt password gpg
 todo: init project
+example remote install on server rsync -r . zwhitchcox.dev:$PWD && ssh -t zwhitchcox.dev "$(cat ../key/key.env | sed -z 's/\n/; /g') bash $PWD/init.sh"
