@@ -13,7 +13,8 @@ add_bin_to_path() {
 }
 
 source_env() {
-  for p in ${1[@]}; do
+  args="$1"
+  for p in ${args[@]}; do
     test -f $p && source $p
   done
 }
@@ -38,7 +39,7 @@ alias vim=nvim
 
 
 # # Appends every command to the history file once it is executed
-if [ -n $(which setopt) ]; then
+if [ -n "$(which setopt)" ]; then
  setopt inc_append_history
 # # Reloads the history whenever you use it
  setopt share_history
