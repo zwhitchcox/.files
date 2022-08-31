@@ -4,13 +4,13 @@
 relpath() {
   local p1=$1
   local p2=$2
-  echo $(dirname ${p2:$((${#p1}+1))}) 
+  echo $(dirname ${p2:$((${#p1}+1))})
 }
 
 output_all() {
-  local projects=$(find -L $DEV_DIR/$ENV -type d -name '.git')
+  local projects=$(find -L $DEVDIR/$ENV -type d -name '.git')
   for project in $projects; do
-    relpath $DEV_DIR $project
+    relpath $DEVDIR $project
   done
 }
 
@@ -18,7 +18,7 @@ output_all() {
 filter_deleted() {
   local in;
   while read in; do
-    test -r "$DEV_DIR/$in/.git" && [ -n "$in" ] && echo "$in"
+    test -r "$DEVDIR/$in/.git" && [ -n "$in" ] && echo "$in"
   done
 }
 

@@ -5,7 +5,7 @@ status_all() {
   GREEN='\033[0;32m'
   NC='\033[0m' # No Color
   for proj in $(recent_projects); do
-    cd $DEV_DIR/$proj
+    cd $DEVDIR/$proj
     local s="$(git status -s)"
     if [ -n "$s" ]; then
       echo -e "$proj" # ${RED} x${NC}"
@@ -18,7 +18,7 @@ status_all() {
 
 
 status_one() {
-  local proj_path=$DEV_DIR/$ENV/$1
+  local proj_path=$DEVDIR/$ENV/$1
   if test -d $1; then
     cd $1
   elif test -d $proj_path; then

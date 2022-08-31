@@ -15,20 +15,20 @@ if [ -z "$1" ]; then
   return $?
 fi
 
-DEV_DIR=$(realpath "$DEV_DIR")
-ENV_DIR=$(realpath "$DEV_DIR/$(get_env)")
+DEVDIR=$(realpath "$DEVDIR")
+ENV_DIR=$(realpath "$DEVDIR/$(get_env)")
 
-strip_dev_dir() {
+strip_DEVDIR() {
   local my_path=$(realpath $1)
-  [[ $my_path/* == $DEV_DIR/* ]] && echo ${my_path:$((${#DEV_DIR}+1))} && return 0
+  [[ $my_path/* == $DEVDIR/* ]] && echo ${my_path:$((${#DEVDIR}+1))} && return 0
   return 1
 }
 
 check_dirs() {
-  for dir in $@; do 
+  for dir in $@; do
     local p=$(realpath $dir)
     if [ -d $p ]; then
-      project=$(strip_dev_dir $p)
+      project=$(strip_DEVDIR $p)
       project_full=$p
       return 0
     fi
@@ -39,7 +39,7 @@ check_dirs() {
 check_absolute() {
   if [[ $1 == .* ]] || [[ $1 == /* ]]; then
     p=$(realpath $1)
-    project=$(strip_dev_dir $p)
+    project=$(strip_DEVDIR $p)
     project_full=$p
     return 0
   fi
@@ -47,7 +47,7 @@ check_absolute() {
 }
 
 
-check_absolute $1 || check_dirs $ENV_DIR/$1 $DEV_DIR/*/$1 $PWD/$1 || err_exit "not found"
+check_absolute $1 || check_dirs $ENV_DIR/$1 $DEVDIR/*/$1 $PWD/$1 || err_exit "not found"
 
 # if not in dev dir, use absolute path
 if ! [[ "$project" == /* ]]; then
@@ -59,7 +59,7 @@ fi
 
 window_name="$(echo "$project" | sed 's/\./_/g')"
 contains() {
-  while read line; do 
+  while read line; do
     if [ "$line" == "$1" ]; then
       return 0
     fi

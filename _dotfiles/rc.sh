@@ -25,8 +25,8 @@ source_env \
   /usr/share/nvm/init-nvm.sh
 
 export EDITOR=nvim
-export DEV_DIR=$HOME/dev
-export USR_DIR=$HOME/usr
+export DEVDIR=$HOME/dev
+export USRDIR=$HOME/usr
 if [ -n "$hist_file" ]; then
   export HISTFILE="$hist_file"
 fi
@@ -37,23 +37,18 @@ export EDITOR=nvim
 export DEV_HIST="$HOME/.devhist"
 alias vim=nvim
 
-whichq() {
-  which "$1" &>/dev/null
-  return $?
-}
 
-
-if whichq setopt; then
-  # # Appends every command to the history file once it is executed
+# # Appends every command to the history file once it is executed
+if [ -n "$(which setopt)" ]; then
  setopt inc_append_history
-  # # Reloads the history whenever you use it
+# # Reloads the history whenever you use it
  setopt share_history
  setopt HIST_IGNORE_SPACE
 fi
 
-if [ -d $USR_DIR/balena-cli ]; then
+if [ -d $USRDIR/balena-cli ]; then
   if ! which balena &>/dev/null; then
-    export PATH=$PATH:$USR_DIR/balena-cli
+    export PATH=$PATH:$USRDIR/balena-cli
   fi
 fi
 
@@ -63,11 +58,7 @@ alias lower="tr '[:upper:]' '[:lower:]'"
 alias upper="tr '[:lower:]' '[:upper:]'"
 
 add_bin_to_path "$HOME/dev/$USER/bin/"{unix,linux,git,project_management,sessions,desktop}
-<<<<<<< HEAD
-add_bin_to_path "$HOME/dev/$USER/devops/deploy"
-=======
 add_bin_to_path $HOME/dev/$USER/devops/deploy
->>>>>>> branch
 if [ "$status_shown" != true ] && [ -n "$VIMRUNTIME" ] && [ -n "$TMUX" ] ; then
   status
   export status_shown=true
