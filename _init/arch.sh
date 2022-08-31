@@ -22,8 +22,6 @@ whichq gh || install_gh
 gh auth status &>/dev/null || gh_login
 test -f ~/.ssh/id_rsa || keygen
 gh_config
-gh_add_host_keys
-test -d $HOME/bin || init_bin
 local src_rc='source $HOME/dev/$USER/bin/_rc/'$1'.sh'
 add_rc '$HOME/dev/$USER/bin/_rc/'linux.sh
 add_rc '$HOME/dev/$USER/bin/_rc/'arch.sh
