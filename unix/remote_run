@@ -25,4 +25,4 @@ for script in $scripts; do
   fi
 done
 
-cat $scripts | ssh $host "bash -s" $@;
+ssh -t $host "$(cat $scripts)";
