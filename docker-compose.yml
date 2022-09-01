@@ -1,0 +1,9 @@
+
+version: "2"
+
+services:
+  dev:
+    build: .
+    privileged: true
+    labels:
+      io.balena.features.dbus: '1'

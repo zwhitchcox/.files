@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 sudo echo -n '' # acquire sudo permissions early
+set -x
+
+debug() {
+  [ "$DEBUG" == true ] && echo "$@"
+}
 
 export PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
+is_linux() {
+  [ "$PLATFORM" == linux ]
+}
+
+is_darwin() {
+  [ "$PLATFORM" == darwin ]
+}
+
+is_balena() {
+  [ "$IN_BALENA" == true ]
+}
 
 log() {
   if $BOOTSTRAP_VERBOSE; then
@@ -21,7 +37,10 @@ exists() {
 }
 
 update_sources() {
-  if [ $PLATFORM == linux ]; then
+  if is_darwin || is_linux; then
+    return 0 # automatic
+  fi
+  if is_linux; then
     if exists pacman; then
       pacman -Syyu --noconfirm
     elif exists apt; then
@@ -30,57 +49,97 @@ update_sources() {
       err_exit "could not find your platform"
       exit 1
     fi
-  elif [ $PLATFORM == darwin ]; then
-    : # brew does this automatically
   else
     err_exit "could not find your platform"
   fi
 }
 
+install_snap() {
+  if is_linux; then
+    git clone https://aur.archlinux.org/snapd.git $SRCDIR || return 1
+    sudo systemctl enable --now snapd.socket || return 1
+    sudo ln -s /var/lib/snapd/snap /snap || return 1
+  fi
+}
+
 # package installer
 pkg_apt() {
-  if [ $PLATFORM == linux ] && exists apt; then
-    sudo apt install -y $@
-    return $?
+  if is_linux && exists apt; then
+    echo installing $@ from apt
+    local output=$(sudo apt install -y $@ 2>&1)
+    if [ "$?" != "0" ]; then
+      echo "$output" 1>&2
+      return 1
+    fi
+    return 0
   fi
   return 1
 }
 
 pkg_pacman() {
-  if [ $PLATFORM == linux ] && exists pacman; then
-    sudo pacman -S --noconfirm $@
-    return $?
+  if is_linux && exists pacman; then
+    echo installing $@ from pacman
+    local output=$(pacman -S --noconfirm $@ 2>&1)
+    if [ "$?" != "0" ]; then
+      echo "$output" 1>&2
+      return 1
+    fi
+    return 0
   fi
   return 1
 }
 
 pkg_brew() {
-  if ! exists brew; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  fi
-  if [ $PLATFORM == darwin ]; then
-    brew install $@
-    return $?
+  if is_darwin; then
+    if ! exists brew; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+    echo installing $@ from snap
+    local output=$(brew install $@ 2>&1)
+    if [ "$?" != "0" ]; then
+      echo "$output" 1>&2
+      return 1
+    fi
+    return $0
   fi
   return 1
 }
 
 pkg_snap() {
-  if [ $platform == linux ] && exists snap; then
-    snap install $@
-    return $?
+  if is_linux && exists snap; then
+    echo installing $@ from snap
+    local output=$(snap install $@ 2>&1)
+    if [ "$?" != "0" ]; then
+      echo "$output" 1>&2
+      return 1
+    fi
+    return $0
+  fi
+  return 1
+}
+
+pkg_balena() {
+  if is_linux && is_balena; then
+    echo installing $@ from balena
+    local output
+    output=$(install_packages $@  2>&1)
+    if [ "$?" != "0" ]; then
+      echo "$output" 1>&2
+      return 1
+    fi
+    return 0
   fi
   return 1
 }
 
 pkg_all() {
-  pkg_pacman $1 || pkg_brew $1 || pkg_apt $1 || pkg_snap $1
+  pkg_pacman $1 || pkg_brew $1 || pkg_apt $1 || pkg_snap $1 || pkg_balena $1
 }
 
 check_token() {
   if [ -z "$GH_TOKEN" ]; then
     if [ -n "$KEYFILE" ]; then
-      source $KEYFILE
+      source $KEYFILE || return 1
     fi
     err_exit Need GH_TOKEN
   fi
@@ -89,18 +148,18 @@ check_token() {
 keygen() {
   local key_file=$HOME/.ssh/id_rsa
   [ -f $key_file ] && return 0
-  set -e
-  local email="$(curl \
+  local email
+  email="$(curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $GH_TOKEN" \
-    https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email')"
-  mkdir -p $HOME/.ssh
+    https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email')" || return 1
+  mkdir -p $HOME/.ssh || return 1
   ssh-keygen -C $email -t rsa -b 4096 -f $key_file -P ''
-  set +e
 }
 
 add_key() {
-  local output=$(
+  local output
+  output=$(
     curl -s \
       -X POST \
       -H "Accept: application/vnd.github+json" \
@@ -112,7 +171,7 @@ add_key() {
   test $? -eq 0 && return
   if ! echo $output | grep -q "key is already in use"; then
     echo -e "could not add key\n$output" > /dev/stderr
-    exit 1
+    return 1
   else
     echo "key already added" 1>&2
   fi
@@ -120,19 +179,13 @@ add_key() {
 
 # add github host keys to known hosts
 gh_add_host_keys() {
-  local key_file=$HOME/.ssh/known_hosts
-  local keys=$(ssh-keyscan -H github.com 2>/dev/null)
+  local key_file
+  local keys
+  key_file=$HOME/.ssh/known_hosts
+  keys=$(ssh-keyscan -H github.com 2>/dev/null) || return 1
   (echo $keys ; cat $key_file) | sort | uniq -u > $key_file
 }
 
-
-install_snap() {
-  if [ $PLATFORM == linux ]; then
-    git clone https://aur.archlinux.org/snapd.git $SRCDIR
-    sudo systemctl enable --now snapd.socket
-    sudo ln -s /var/lib/snapd/snap /snap
-  fi
-}
 
 gh_login() {
   echo $GH_TOKEN | gh auth login \
@@ -142,18 +195,17 @@ gh_login() {
 }
 
 keygen() {
-  set -e
-  local email="$(curl \
+  local email
+  email=$(curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $GH_TOKEN" \
-    https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email')"
+    https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email') || return 1
   ssh-keygen -C $email -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ''
-  set +e
 }
 
 # get list of keys
 gh_list_keys() {
-  curl \
+  curl -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $GH_TOKEN" \
     https://api.github.com/user/keys
@@ -167,7 +219,7 @@ gh_key_by_title() {
 # delete ssh key
 gh_key_del() {
   local KEY_ID=$1
-  curl \
+  curl -s \
     -X DELETE \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $GH_TOKEN" \
@@ -180,19 +232,19 @@ add_rc() {
 }
 
 ln_dotfiles() {
-  set -x
-  for base in $(ls -a $BINDIR/_dotfiles | grep -Ev '^\.+$'); do
-    local target=$BINDIR/_dotfiles/$base
-    local source=$HOME/$(basename $target)
+  local target
+  local source
+  for base in $(ls -a $BINDIR/_dotfiles | grep -Ev '^\.+$' || return 1); do
+    target=$BINDIR/_dotfiles/$base
+    source=$HOME/$(basename $target) || return 1
     if [ -L $source ]; then
       [ "$(readlink $source)" != $target ] && err_exit "$target already exists"
     elif [ -f $source ]; then
       err_exit "$target already exists"
     else
-      ln -s $target $source
+      ln -s $target $source || return 1
     fi
   done
-  set +x
 }
 
 whichq() {
@@ -200,42 +252,44 @@ whichq() {
 }
 
 rcfile() {
-  echo -e ".$(basename $(echo -e $SHELL))rc"
+  echo -e ".$(basename $(echo -e $SHELL))rc" || return 1
 }
 
 install_rustup() {
-  curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
+  curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y || return 1
 }
 
 install_nvm() {
-  local release=$(gh release list -R nvm-sh/nvm --limit 1 | awk '{print $1}')
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${release}/install.sh | bash
+  local release
+  release=$(gh release list -R nvm-sh/nvm --limit 1 | awk '{print $1}') || return 1
+  curl -s -o- https://raw.githubusercontent.com/nvm-sh/nvm/${release}/install.sh | bash || return 1
 }
 
 
 doctl_login() {
-  doctl auth init &>/dev/null
+  doctl auth init &>/dev/null || return 1
 }
 
 install_balena() {
-  set -e
-  local release=$(bash $BINDIR/git/latest_release balena-io/balena-cli)
+  local release
+  release=$(bash $BINDIR/git/latest_release balena-io/balena-cli)
   local dlpath=/tmp/balena-cli.zip
-  curl -L -o $dlpath "https://github.com/balena-io/balena-cli/releases/download/${release}/balena-cli-${release}-linux-x64-standalone.zip"
-  mkdir -p $USRDIR
-  unzip -d $USRDIR $dlpath
-  set +e
+  curl -sL -o $dlpath "https://github.com/balena-io/balena-cli/releases/download/${release}/balena-cli-${release}-linux-x64-standalone.zip" || return 1
+  mkdir -p $USRDIR || return 1
+  unzip -q -d $USRDIR $dlpath || return 1
 }
 
 base_pkg() {
-  whichq make || pkg_pacman base-devel git jq
-  whichq make || pkg_apt build-essential unzip jq
-  whichq make || base_darwin
+  whichq make || pkg_balena build-essential unzip jq \
+    || pkg_pacman base-devel git jq \
+    || pkg_apt build-essential unzip jq \
+    || base_darwin \
+    || pkg_all build-essential unzip jq
 }
 
 
 base_darwin() {
-  if [ $PLATFORM == darwin ] && ! exists git; then
+  if is_darwin && ! exists git; then
     touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
     PROD=$(softwareupdate -l |
       grep "\*.*Command Line" |
@@ -244,15 +298,9 @@ base_darwin() {
       tr -d '\n')
     softwareupdate -i "$PROD" --verbose
     rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+  else
+    return 1
   fi
-}
-
-install_nvim() {
-  set -e
-  mkdir -p ~/.config
-  ln -sf $HOME/dev/$USER/config.nvim $HOME/.config/nvim
-  whichq nvim || pkg_all neovim
-  set +e
 }
 
 clone_dev() {
@@ -269,27 +317,55 @@ gh_keys() {
 }
 
 ### MAIN ###
-export BINDIR=$HOME/dev/$USER/bin
+export BINDIR="$(echo "$HOME/dev/$USER/bin" | sed 's/\/\//\//g')"
 export USRDIR=$HOME/usr
 export SRCDIR=$HOME/src
+export USER=$(whoami)
+echo $USER
 
 mkdir -p $SRCDIR
 mkdir -p $USRDIR
 
+
+nofail() {
+  if ! $@ ; then
+    echo Failure: "$@"
+    set -x
+    $@ # do it again for debugging
+    exit 1
+  fi
+}
+
+whichor() {
+  if ! whichq $1 ; then
+    shift 1
+    $@
+  fi
+}
+
+should_snap() {
+  ! is_balena || is_darwin # no snap support
+}
+
 # packages
 update_sources
 base_pkg
-whichq snap || install_snap
-whichq rustup || install_rustup
-whichq gh || pkg_all gh
-whichq doctl || pkg_all doctl
-whichq jq || pkg_all jq
-whichq rg || pkg_all ripgrep
-whichq tmux || pkg_all tmux
-whichq fzf || pkg_all fzf
-install_nvim
+
+whichor git        nofail pkg_all git
+whichor snap       'should_snap || nofail install_snap'
+whichor gh         'should_snap || nofail pkg_snap gh'
+whichor doctl      'should_snap || nofail pkg_snap doctl'
+whichor rustup     nofail install_rustup
+whichor jq         nofail pkg_all jq
+whichor rg         nofail pkg_all ripgrep
+whichor tmux       nofail pkg_all tmux
+whichor fzf        nofail pkg_all fzf
+whichor nvim       nofail pkg_all neovim
+whichor fd         nofail pkg_all fd
 test -d $HOME/.nvm || install_nvm
 test -d $USRDIR/balena-cli || install_balena
+
+is_balena &&  exit
 
 # config gh
 gh_keys
@@ -302,3 +378,5 @@ doctl account get &>/dev/null || doctl_login
 clone_dev
 ln_dotfiles
 add_rc '$HOME/.rc.sh'
+mkdir -p ~/.config
+ln -sf $HOME/dev/$USER/config.nvim $HOME/.config/nvim

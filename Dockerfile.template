@@ -1,0 +1,76 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-ubuntu
+RUN install_packages build-essential neovim wget
+# RUN echo hosts: files dns > /etc/nsswitch.conf
+# ENV IN_BALENA true
+#
+# WORKDIR /root
+#
+#
+# # Download Nix and install it into the system.
+# COPY ./ ./
+# RUN bash ./unix/add_user zwhitchcox
+# RUN mkdir -m 0755 /etc/nix
+# RUN echo 'sandbox = false' > /etc/nix/nix.conf
+# RUN mkdir -m 0755 /nix
+# RUN chown -R zwhitchcox /nix
+# RUN sh <(curl -L https://nixos.org/nix/install) --no-daemon
+#
+# ARG NIX_VERSION=2.11.0
+# RUN addgroup --gid 30000 --system nixbld
+# RUN for i in $(seq 1 30); do adduser --system --no-create-home --uid $((30000 + i)) --gecos "Nix build user $i"  --gid 30000 nixbld$i ; done
+#
+#
+#
+# USER zwhitchcox
+# WORKDIR /home/zwhitchcox
+# RUN wget https://nixos.org/releases/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-$(uname -m)-linux.tar.xz 2>/dev/null
+# RUN tar xf nix-${NIX_VERSION}-$(uname -m)-linux.tar.xz
+# RUN sh nix-${NIX_VERSION}-$(uname -m)-linux/install
+# RUN ln -s /nix/var/nix/profiles/default/etc/profile.d/nix.sh /etc/profile.d/
+# RUN rm -r /nix-${NIX_VERSION}-$(uname -m)-linux*
+# RUN rm -rf /var/cache/apk/*
+# RUN /nix/var/nix/profiles/default/bin/nix-collect-garbage --delete-old
+# RUN /nix/var/nix/profiles/default/bin/nix-store --optimise
+# RUN /nix/var/nix/profiles/default/bin/nix-store --verify --check-contents
+#
+# ONBUILD ENV \
+#     ENV=/etc/profile \
+#     USER=root \
+#     PATH=/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/bin:/sbin:/usr/bin:/usr/sbin \
+#     GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt \
+#     NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+#
+# ENV \
+#     ENV=/etc/profile \
+#     USER=root \
+#     PATH=/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/bin:/sbin:/usr/bin:/usr/sbin \
+#     GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt \
+#     NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+#     NIX_PATH=/nix/var/nix/profiles/per-user/root/channels
+
+ARG user=zwhitchcox
+
+WORKDIR /root
+COPY ./unix/add_user ./add_user
+RUN bash ./add_user ${user}
+RUN mkdir -m 0755 /nix
+RUN mkdir -m 0755 /etc/nix
+RUN echo 'sandbox = false' > /etc/nix/nix.conf
+RUN chown -R ${user}:${user} /nix
+RUN chown -R ${user}:${user} /etc/nix
+
+WORKDIR /home/${user}
+RUN addgroup --gid 30000 --system nixbld
+RUN for i in $(seq 1 30) ; do \
+  adduser --system --no-create-home --uid $((30000 + i)) --gecos "Nix build user $i"  --gid 30000 nixbld$i & \
+done && \
+wait
+
+COPY ./ ./
+RUN chown -R ${user}:${user} .
+USER zwhitchcox
+RUN bash install-nix.sh
+RUN cat .profile | grep '# added by Nix installer' | cat >>.bashrc
+# RUN sh <(curl -L https://nixos.org/nix/install) --no-daemon
+
+CMD tail -f /dev/null || tail -f /dev/null
