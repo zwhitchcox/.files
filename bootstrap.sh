@@ -94,7 +94,7 @@ pkg_brew() {
     if ! exists brew; then
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
-    echo installing $@ from snap
+    echo installing $@ from brew
     local output=$(brew install $@ 2>&1)
     if [ "$?" != "0" ]; then
       echo "$output" 1>&2
@@ -347,9 +347,38 @@ should_snap() {
   ! is_balena || is_darwin # no snap support
 }
 
+install_nix() {
+  # install nix
+  sh <(curl -L https://nixos.org/nix/install) 2>/dev/null --no-daemon
+
+  cat  $HOME/.nix-profile/etc/profile.d/nix.sh 
+  [ -z "$USER" ] && USER=$user
+  # source nix
+  source $HOME/.nix-profile/etc/profile.d/nix.sh 
+
+  # install packages
+  nix-env -iA \
+    nixpkgs.zsh \
+    nixpkgs.antibody \
+    nixpkgs.git \
+    nixpkgs.neovim \
+    nixpkgs.tmux \
+    nixpkgs.stow \
+    nixpkgs.yarn \
+    nixpkgs.fzf \
+    nixpkgs.ripgrep \
+    nixpkgs.bat \
+    nixpkgs.gnumake \
+    nixpkgs.gcc \
+    nixpkgs.direnv \
+    nixpkgs.jq
+}
+
 # packages
 update_sources
 base_pkg
+
+whichor nix-env    nofail install_nix
 
 whichor git        nofail pkg_all git
 whichor snap       'should_snap || nofail install_snap'
@@ -366,6 +395,11 @@ test -d $HOME/.nvm || install_nvm
 test -d $USRDIR/balena-cli || install_balena
 
 is_balena &&  exit
+
+if [ -z "$GH_TOKEN" ]; then
+  echo "set GH_TOKEN to continue installation" 1>&2
+  exit # not necessarily unplanned
+fi
 
 # config gh
 gh_keys
