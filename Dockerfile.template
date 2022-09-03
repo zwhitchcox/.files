@@ -1,6 +1,5 @@
 FROM balenalib/%%BALENA_MACHINE_NAME%%-ubuntu
 
-
 ARG user=zwhitchcox
 
 RUN install_packages build-essential wget
@@ -21,5 +20,6 @@ COPY ./install/nix_pkgs.sh ./nix_pkgs.sh
 RUN bash ./nix_pkgs.sh
 COPY ./install/docker_post.sh docker_post.sh
 RUN bash ./docker_post.sh
+RUN rm *.sh
 
 CMD balena-idle

@@ -12,3 +12,5 @@ fi
 
 # install nix
 sh <(curl -L https://nixos.org/nix/install) 2>/dev/null --no-daemon
+
+cat .profile | grep '# added by Nix installer' | cat >>.bashrc
