@@ -1,29 +1,25 @@
 FROM balenalib/%%BALENA_MACHINE_NAME%%-ubuntu
-RUN install_packages build-essential neovim wget
+
 
 ARG user=zwhitchcox
 
-WORKDIR /root
-COPY ./bin/unix/add_user ./add_user
-RUN bash ./add_user ${user}
-RUN mkdir -m 0755 /nix
-RUN mkdir -m 0755 /etc/nix
-RUN echo 'sandbox = false' > /etc/nix/nix.conf
-RUN chown -R ${user}:${user} /nix
-RUN chown -R ${user}:${user} /etc/nix
+RUN install_packages build-essential wget
 
-WORKDIR /home/${user}
-RUN addgroup --gid 30000 --system nixbld
-RUN for i in $(seq 1 30) ; do \
-  adduser --system --no-create-home --uid $((30000 + i)) --gecos "Nix build user $i"  --gid 30000 nixbld$i & \
-done && \
-wait
+# run install scripts
+WORKDIR /docker/install
 
-COPY ./init/base.sh ./base.sh
-RUN chown -R ${user}:${user} .
+COPY ./install/docker_pre.sh ./docker_pre.sh
+RUN bash ./docker_pre.sh ${user}
+
+ENV USER ${user}
+ENV HOME /home/${user}
 USER ${user}
-RUN bash base.sh
-RUN cat .profile | grep '# added by Nix installer' | cat >>.bashrc
-COPY ./init/init.sh ./init.sh
+WORKDIR /home/${user}
+COPY ./install/nix.sh ./nix.sh
+RUN bash ./nix.sh
+COPY ./install/nix_pkgs.sh ./nix_pkgs.sh
+RUN bash ./nix_pkgs.sh
+COPY ./install/docker_post.sh docker_post.sh
+RUN bash ./docker_post.sh
 
-CMD tail -f /dev/null || tail -f /dev/null
+CMD balena-idle

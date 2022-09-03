@@ -5,6 +5,7 @@ volumes:
 services:
   dev:
     build: .
+    network_mode: host
     privileged: true
     labels:
       io.balena.features.balena-socket: '1'
