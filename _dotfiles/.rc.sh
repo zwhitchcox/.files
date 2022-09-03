@@ -3,9 +3,11 @@
 rcfile() {
   echo -e ".$(basename $(echo -e $SHELL))rc"
 }
+
 refresh() {
   source $HOME/$(rcfile)
 }
+
 add_bin_to_path() {
   for p in "$@"; do
     test -d $p && echo $PATH | grep -q "(^|:)$p(\$|:)" || export PATH=$PATH:$p
@@ -25,8 +27,9 @@ source_env \
   /usr/share/nvm/init-nvm.sh
 
 export EDITOR=nvim
-export DEVDIR=$HOME/dev
+export SRCDIR=$HOME/dev
 export USRDIR=$HOME/usr
+export BINDIR=$HOME/usr
 if [ -n "$hist_file" ]; then
   export HISTFILE="$hist_file"
 fi
@@ -34,7 +37,7 @@ export HISTSIZE=100000
 export HISTFILESIZE=200000
 export HISTCONTROL=ignoreboth:erasedups
 export EDITOR=nvim
-export DEV_HIST="$HOME/.devhist"
+export DEVHIST="$HOME/.devhist"
 alias vim=nvim
 
 
@@ -52,13 +55,12 @@ if [ -d $USRDIR/balena-cli ]; then
   fi
 fi
 
-
 # text
 alias lower="tr '[:upper:]' '[:lower:]'"
 alias upper="tr '[:lower:]' '[:upper:]'"
 
-export BINDIR=$DEVDIR/$USER/bin
-add_bin_to_path $BINDIR/{unix,linux,git,project_management,sessions,desktop,devops/deploy}
+
+add_bin_to_path $BINDIR
 
 if [ "$status_shown" != true ]; then
   status

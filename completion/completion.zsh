@@ -13,4 +13,4 @@ _completion_remote_run() {
   done
 }
 
-compdef _completion_remote_run remote_run
+compdef _completion_remote_rLn remote_run

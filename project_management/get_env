@@ -1,7 +1,0 @@
-#!/bin/bash
-if [[ $PWD != $DEVDIR/* ]]; then
-  exit 1
-fi
-
-relpath="${PWD:$((${#DEVDIR}+1))}"
-echo ${relpath%%/*}
