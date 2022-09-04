@@ -11,7 +11,9 @@ user=$1
 adduser --gecos "" --disabled-password --shell /bin/bash --uid 1000 $user
 usermod -aG sudo $user
 chown -R $user:$user /home/$user
-touch /home/$HOME/.sudo_as_admin_successful
+touch /home/$user/.sudo_as_admin_successful
+echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
+
 
 mkdir -m 0755 /nix
 mkdir -m 0755 /etc/nix

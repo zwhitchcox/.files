@@ -24,4 +24,5 @@ nix-env -iA \
   nixpkgs.gh \
   nixpkgs.doctl \
   nixpkgs.rustup \
-  nixpkgs.unzip
+  nixpkgs.unzip \
+  nixpkgs.home-manager

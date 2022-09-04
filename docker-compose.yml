@@ -2,6 +2,7 @@
 version: "2.1"
 volumes:
   src:
+  pkgs:
 services:
   dev:
     build: .
@@ -19,3 +20,4 @@ services:
       io.balena.features.balena-api: '1'
     volumes:
       - 'src:/home/zwhitchcox/src'
+      - 'pkgs:/nix'
