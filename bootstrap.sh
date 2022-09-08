@@ -1,3 +1,7 @@
+bash <(curl -l -H 'Authorization: token '$GH_TOKEN \
+  -H 'Accept: application/vnd.github.v3.raw' \
+  -L https://api.github.com/repos/zwhitchcox/.files/bootstrap.sh)
+
 err_exit() {
   echo "$@" 1>&2
   exit 1
@@ -29,3 +33,7 @@ bash install/nvm.sh
 
 # install balena cli
 bash install/balena.sh
+
+popd # .files
+popd # src
+popd # $HOME
