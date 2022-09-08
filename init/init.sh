@@ -3,8 +3,7 @@ err_exit() {
   exit 1
 }
 
-# dev
-clone_src
+# nvim
 mkdir -p ~/.config
 ln -sf $HOME/src/$USER/config.nvim $HOME/.config/nvim
 
