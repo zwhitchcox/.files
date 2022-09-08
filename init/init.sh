@@ -4,6 +4,7 @@ err_exit() {
 }
 
 # nvim
+git clone git@github.com:$USER/config.nvim $HOME/src/$USER/config.nvim
 mkdir -p ~/.config
 ln -sf $HOME/src/$USER/config.nvim $HOME/.config/nvim
 
