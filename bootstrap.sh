@@ -1,6 +1,6 @@
 # bash <(curl -l -H 'Authorization: token '$GH_TOKEN \
 #   -H 'Accept: application/vnd.github.v3.raw' \
-#   -L https://api.github.com/repos/zwhitchcox/.files/bootstrap.sh)
+#   -L https://api.github.com/repos/zwhitchcox/.files/contents/bootstrap.sh)
 
 err_exit() {
   echo "$@" 1>&2
@@ -18,7 +18,7 @@ create_src() {
   pushd src
 }
 
-clone_dot_files() {
+clone_dotfiles() {
   # clone this repo and switch to it
   git clone --recurse-submodules https://oauth2:$GH_TOKEN@zwhitchcox/.files.git
   pushd .files
