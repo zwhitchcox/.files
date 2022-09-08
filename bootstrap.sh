@@ -7,32 +7,28 @@ err_exit() {
   exit 1
 }
 
-# create source directory
-pushd $HOME
-mkdir -p src
-pushd src
+check_token() {
+  [ -z "$GH_TOKEN" ] &&  err_exit "This script requires GH_TOKEN to be set."
+}
 
-# clone this repo and switch to it
-git clone --recurse-submodules git@github.com:zwhitchcox/.files
-pushd .files
+create_src() {
+  # create source directory
+  pushd $HOME
+  mkdir -p src
+  pushd src
+}
 
-# install nix packages
-bash install/nix_pkgs.sh
+clone_dot_files() {
+  # clone this repo and switch to it
+  git clone --recurse-submodules https://oauth2:$GH_TOKEN@zwhitchcox/.files.git
+  pushd .files
+}
 
-# add ssh keys
-bash init/keys.sh
+check_token
+create_src
+clone_dotfiles
 
-# login to different sites
-bash init/login.sh
-
-# initialize user preferences
-bash init/init.sh
-
-# install nvm
-bash install/nvm.sh
-
-# install balena cli
-bash install/balena.sh
+bash init.sh
 
 popd # .files
 popd # src
