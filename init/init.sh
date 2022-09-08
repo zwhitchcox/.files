@@ -3,18 +3,10 @@ err_exit() {
   exit 1
 }
 
-
-clone_src() {
-  GH_USER=${GH_USER:-$USER}
-  if [ ! -d $HOME/src ]; then
-    git clone --recurse-submodules -j8 git@github.com:$GH_USER/dev
-  fi
-}
-
 # dev
 clone_src
 mkdir -p ~/.config
-ln -sf $HOME/dev/$USER/config.nvim $HOME/.config/nvim
+ln -sf $HOME/src/$USER/config.nvim $HOME/.config/nvim
 
 BINDIR=$HOME/bin
 mkdir -p $BINDIR
