@@ -20,7 +20,7 @@ create_src() {
 
 clone_dotfiles() {
   # clone this repo and switch to it
-  git clone --recurse-submodules https://oauth2:$GH_TOKEN@zwhitchcox/.files.git
+  git clone --recurse-submodules https://oauth2:$GH_TOKEN@github.com/zwhitchcox/.files.git
   pushd .files
 }
 
