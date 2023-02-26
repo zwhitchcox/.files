@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-city=${1:-knoxville}
-
-curl -s https://wttr.in/${city}

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# show how many lines of code are in directory.
-
-dir=${1:-$PWD}
-
-find $dir -type f -name '*' | xargs wc -l |  awk '{s+=$1} END {print s}'

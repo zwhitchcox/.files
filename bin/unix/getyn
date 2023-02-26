@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-
-echo -n "$1" 1>&2
-read answer
-
-echo $answer | tr '[:upper:]' '[:lower:]' | grep -q '^y'
-exit $?

@@ -1,7 +1,0 @@
-#!/bin/bash
-if [[ $PWD != $SRCDIR/* ]]; then
-  exit 1
-fi
-
-relpath="${PWD:$((${#SRCDIR}+1))}"
-echo ${relpath%%/*}
