@@ -1,3 +1,3 @@
 #!/bin/bash
 
-stow config/*
+stow -v -R -t ~ config

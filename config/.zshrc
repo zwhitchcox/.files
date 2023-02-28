@@ -53,3 +53,5 @@ export BAT_THEME="gruvbox-dark"
 
 [ -f $HOME.rc.sh ] && source $HOME/.rc.sh
 [ -f $HOME/local.rc.sh ] && source $HOME/local.rc.sh
+
+export LUA_PATH="/usr/share/lua/5.4/?.lua;/usr/share/lua/5.4/?/init.lua;$HOME/.luarocks/share/lua/5.4/?.lua;$HOME/.luarocks/share/lua/5.4/?/init.lua;$HOME/.local/share/lua/5.4/?.lua;$HOME/.local/share/lua/5.4/?/init.lua;$LUA_PATH"

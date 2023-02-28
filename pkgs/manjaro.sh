@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # install packages
-sudo pacman -S \
+sudo pacman -Syyu \
   zsh \
-  antibody \
   git \
+  github-cli \
   neovim \
   tmux \
   stow \
@@ -17,7 +17,7 @@ sudo pacman -S \
   direnv \
   jq \
   fd \
-  gh \
   doctl \
   rustup \
-  unzip
+  unzip \
+  yay
