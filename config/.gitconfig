@@ -16,12 +16,13 @@
     pl = pull
     pu = push
     puf = push --force
+    puom = push -u origin master
     s = status
     co = checkout
     cob = checkout -b
     com = checkout master
     amend = commit --amend --no-edit
-    c = !git add -A && git commit -m
+    c = !git add . -A && git commit -m
     ca = commit -a
     cam = commit -a -m
     cm = commit -m

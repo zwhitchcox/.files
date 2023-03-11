@@ -8,6 +8,7 @@ git
 git-extras
 node
 z
+direnv
 )
 
 # Export nvm completion settings for lukechilds/zsh-nvm plugin
@@ -16,7 +17,6 @@ export NVM_DIR=${HOME}/.nvm
 export NVM_COMPLETION=true
 
 source $ZSH/oh-my-zsh.sh
-
 
 # Bundle zsh plugins via antibody
 alias update-antibody='antibody bundle < $HOME/.zsh_plugins.txt > $HOME/.zsh_plugins.sh'
@@ -54,4 +54,9 @@ export BAT_THEME="gruvbox-dark"
 [ -f $HOME.rc.sh ] && source $HOME/.rc.sh
 [ -f $HOME/local.rc.sh ] && source $HOME/local.rc.sh
 
+
 export LUA_PATH="/usr/share/lua/5.4/?.lua;/usr/share/lua/5.4/?/init.lua;$HOME/.luarocks/share/lua/5.4/?.lua;$HOME/.luarocks/share/lua/5.4/?/init.lua;$HOME/.local/share/lua/5.4/?.lua;$HOME/.local/share/lua/5.4/?/init.lua;$LUA_PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
