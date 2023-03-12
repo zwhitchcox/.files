@@ -62,3 +62,13 @@ export LUA_PATH="/usr/share/lua/5.4/?.lua;/usr/share/lua/5.4/?/init.lua;$HOME/.l
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# better pacman
+pm() {
+  local package="$1"
+  shift
+  if ! sudo pacman -S --noconfirm "$package" "$@"; then
+    echo "Package '$package' not found. Searching for similar packages..."
+    sudo pacman -Ss "$package"
+  fi
+}
