@@ -68,3 +68,6 @@ pm() {
   fi
 }
 export DIRENV_LOG_FORMAT=
+
+export FLYCTL_INSTALL="/home/zwhitchcox/.fly"
+export PATH="$PATH:/home/zwhitchcox/.fly/bin"
