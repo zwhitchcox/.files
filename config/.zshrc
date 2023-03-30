@@ -70,7 +70,9 @@ pm() {
 export DIRENV_LOG_FORMAT=
 
 export FLYCTL_INSTALL="/home/zwhitchcox/.fly"
-export PATH="$PATH:/home/zwhitchcox/.fly/bin"
+if [ ! "$PATH" = "${PATH/$FLYCTL_INSTALL\/bin:/}" ]; then
+  export PATH="${PATH/$FLYCTL_INSTALL\/bin:/}"
+fi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -88,7 +90,46 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 
-if [ -f "$HOME/emsdk/emsdk_env.sh" ]; then
-  export EMSDK_QUIET=1
-  source "$HOME/emsdk/emsdk_env.sh"
-fi
+activate_emscripten() {
+  if [ -f "$HOME/emsdk/emsdk_env.sh" ]; then
+    export EMSDK_QUIET=1
+    source "$HOME/emsdk/emsdk_env.sh"
+  else
+    echo "Emscripten not found"
+  fi
+}
+
+summarize_diff() {
+  local diff="$(git diff --no-color $1 $2 | sed 's/^+//g' | sed 's/^-//g' | sed 's/^ //g' | sed '/^$/d' | sed 's/^/  /g')"
+  local DIFF_PROMPT="Generate a thorough commit message for all of the following changes. Create a one sentence summary, with bullet points underneath if appropriate:\n\n"
+
+  local prompt="$DIFF_PROMPT\n\n$diff\nCommit message:\n"
+  local json_input=$(echo "$prompt" | jq -R -s -c '.')
+  local promp_tokens=$(echo "$json_input" | wc -c)
+
+  local prompt_chars=$(echo -n "$prompt" | wc -c)
+  local max_tokens=$((4096 - prompt_chars/4 - 500))
+
+  local RESPONSE="$(curl -s "https://api.openai.com/v1/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -d @- << EOF
+{
+  "model": "text-davinci-003",
+  "prompt": $json_input,
+  "max_tokens": $max_tokens,
+  "n": 1,
+  "temperature": 0.5
+}
+EOF
+)"
+
+
+  local summary="$(echo -n "$RESPONSE" | perl -pe 's/([\x01-\x1f])/sprintf("\\u%04x", ord($1))/eg' | jq -r '.choices[0].text')"
+  if [ "$summary" = "null" ]; then
+    echo "Error: $(echo "$RESPONSE" | jq -r '.error.message')"
+    return 1
+  fi
+  echo "$summary"
+  echo "$summary" | tee | copy
+}
