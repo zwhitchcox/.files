@@ -33,30 +33,34 @@ EOF
   echo "$summary"
   set +e
 }
-
-
 smart_commit() {
-  echo 'Smart committing...'
   # Stage all changes (additions, modifications, and deletions)
   git add --all
 
   # Generate initial commit message
   local commit_message
   commit_message=$(summarize_diff $1 $2)
-  if [ $? -ne 0 ]; then
-    echo "Commit aborted."
-    return 1
-  fi
 
   # Loop until the user is satisfied with the commit message
   while true; do
-    echo opening editor 1>&2
-    # Open editor for the user to approve or modify the commit message
-    commit_message=$(echo "$commit_message" | ${EDITOR:-vim} --stdin)
-    echo edited 1>&2
+    # Create a temporary file to hold the commit message
+    local tmp_file=$(mktemp)
+
+    # Write the commit message to the temporary file
+    echo "$commit_message" > "$tmp_file"
+
+    # Open the temporary file with Neovim
+    nvim "$tmp_file"
+    local nvim_exit_status=$?
+
+    # Read the modified commit message from the temporary file
+    commit_message=$(cat "$tmp_file")
+
+    # Remove the temporary file
+    rm "$tmp_file"
 
     # If the user saved the commit message, proceed with the commit
-    if [ $? -eq 0 ]; then
+    if [ $nvim_exit_status -eq 0 ]; then
       git commit -m "$commit_message"
       break
     else
@@ -69,7 +73,7 @@ smart_commit() {
 
       case $choice in
         1)
-          commit_message=$(summarize_diff HEAD~1 HEAD~2)
+          commit_message=$(summarize_diff $1 $2)
           ;;
         2)
           echo "Enter your commit message:"
@@ -87,3 +91,4 @@ smart_commit() {
     fi
   done
 }
+
