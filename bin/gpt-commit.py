@@ -74,7 +74,7 @@ def assemble_diffs(parsed_diffs, cutoff):
 
 async def complete(prompt):
     completion_resp = await openai.ChatCompletion.acreate(
-        model="text-davinci-003",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt[: PROMPT_CUTOFF + 100]}],
         max_tokens=128,
     )
