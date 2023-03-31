@@ -1,6 +1,6 @@
 summarize_diff() {
   set -e
-  local diff="$(git diff --staged --no-color $1 $2 | sed 's/^-//g' | sed 's/^ //g' | sed '/^$/d' | sed 's/^/  /g')"
+  local diff="$(git diff --staged --no-color $1 $2 | sed 's/^+//g' | sed 's/^-//g' | sed 's/^ //g' | sed '/^$/d' | sed 's/^/  /g')"
 
   if [ -z "$(echo "$diff" | sed '/^$/d')" ]; then
     echo "No changes to commit." >&2
@@ -14,11 +14,7 @@ summarize_diff() {
 
   local prompt_chars=$(echo -n "$prompt" | wc -c)
   local max_tokens=$((4096 - prompt_chars/4 - 500))
-
-  local RESPONSE="$(curl -s "https://api.openai.com/v1/completions" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d @- << EOF
+  local data="$(cat <<EOF
 {
   "model": "text-davinci-003",
   "prompt": $json_input,
@@ -28,13 +24,24 @@ summarize_diff() {
 }
 EOF
 )"
+  local tmp_file=$(mktemp)
 
 
-  local summary="$(echo -n "$RESPONSE" | perl -pe 's/([\x01-\x1f])/sprintf("\\u%04x", ord($1))/eg' | jq -r '.choices[0].text')"
-  if [ "$summary" = "null" ]; then
-    echo "Error: $(echo "$RESPONSE" | jq -r '.error.message')" 1>&2
+  curl -s "https://api.openai.com/v1/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -d "$data" > "$tmp_file"
+
+  local error=$(cat "$tmp_file" | jq -r '.error')
+  cat $tmp_file >&2
+
+# Now you can use the RESPONSE variable with jq without any issues
+  if [ "$error" != "null" ]; then
+    echo "Error: $error" 1>&2
     return 1
   fi
+
+  local summary="$(cat "$tmp_file" | jq -r '.choices[0].text')"
   echo "$summary"
   set +e
 }
@@ -45,7 +52,6 @@ smart_commit() {
   # Generate initial commit message
   local commit_message
   commit_message=$(summarize_diff $1 $2)
-  echo "exit code: $?"
   if [ $? -ne 0 ]; then
     return 1
   fi
