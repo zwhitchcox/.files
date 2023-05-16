@@ -13,12 +13,12 @@ summarize_diff() {
   local promp_tokens=$(echo "$json_input" | wc -c)
 
   local prompt_chars=$(echo -n "$prompt" | wc -c)
-  local max_tokens=$((4096 - prompt_chars/4 - 500))
+  local max_tokens=$((4096 - prompt_chars/2))
   local data="$(cat <<EOF
 {
   "model": "text-davinci-003",
   "prompt": $json_input,
-  "max_tokens": $max_tokens,
+  "max_tokens": 500,
   "n": 1,
   "temperature": 0.5
 }

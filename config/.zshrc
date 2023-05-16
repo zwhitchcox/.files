@@ -99,4 +99,5 @@ activate_emscripten() {
 }
 
 source ~/.files/custom_functions/git_helpers.sh
+source ~/.files/custom_functions/killer.sh
 export PATH="$HOME/.files/bin:$PATH"
