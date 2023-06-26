@@ -45,3 +45,8 @@
     rs = restore --staged
     add-origin = "!f() { git remote add origin git@github.com:$1; }; f"
     set-origin = "!f() { git remote rm origin; git remote add origin git@github.com:$1; }; f"
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process

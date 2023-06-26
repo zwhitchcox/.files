@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "GNOME Keyboard Shortcuts Cheatsheet:"
+echo "------------------------------------"
+echo "Move cursor back a word: Ctrl + Arrow Left"
+echo "Move cursor forward a word: Ctrl + Arrow Right"
+echo "Delete the word before the cursor: Ctrl + W, Alt + Backspace"
+echo "Delete to the end of word starting at the cursor location: Alt + D"
+echo "------------------------------------"
