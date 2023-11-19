@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+# Function to copy content to clipboard
+copy_to_clipboard() {
+    echo "$1" | pbcopy
+}
+
+# Function to process files and copy to clipboard
+process_files() {
+    local content=""
+
+    # Loop through each file passed as an argument
+    for file in "$@"; do
+        if [[ -f $file ]]; then
+            content+="File: $file\n\n$(cat $file)\n\n"
+        fi
+    done
+
+    # Copy to clipboard
+    copy_to_clipboard "$content"
+}
+
+# Check if any files are provided
+if [[ -z $1 ]]; then
+    echo "Please provide file(s)."
+    exit 1
+fi
+
+# Calling the function with the provided files
+process_files "$@"
+
+# Confirm completion
+echo "Files' contents copied to clipboard."
